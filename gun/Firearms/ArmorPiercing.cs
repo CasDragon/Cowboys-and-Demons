@@ -38,6 +38,7 @@ namespace gun.Firearms
             if ((evt.Reason.Ability != null && evt.Reason.Ability.Blueprint.UseCurrentWeaponAsReasonItem && evt.Reason.Caster?.GetFirstWeapon() == base.Owner) || evt.Reason.Item == base.Owner)
             {
                 evt.AddModifier(evt.Target.Stats.AC.Touch - evt.Target.Stats.AC.ModifiedValue, base.Fact);//This might work but not sure
+                
             }
         }
 

@@ -98,7 +98,7 @@ namespace gun.Deeds
             Texture2D texture2D = new Texture2D(64, 64);
             texture2D.LoadImage(data);
             Sprite icon = Sprite.Create(texture2D, new Rect(0f, 0f, 64, 64), new Vector2(0f, 0f));
-            ContextActionRemoveBuff QuickClear = new ContextActionRemoveBuff();//will need to tweak this later to account for capacity for now will simply forbid stacking on reload and have no weapons with capacity
+            ContextActionRemoveBuff QuickClear = new ContextActionRemoveBuff();
             QuickClear.m_Buff = BlueprintTool.GetRef<BlueprintBuffReference>(DamagedFirearm.DamagedFirearmGUID);
 
             AbilityEffectRunAction QuickClearAction = new AbilityEffectRunAction();
@@ -118,6 +118,7 @@ namespace gun.Deeds
                 .AddComponent(QuickClearAction)
                 .AddComponent(new HasDamagedFirearm())
                 .AddAbilityResourceLogic(1, isSpendResource: true, requiredResource: Grit.GritResource)
+                .SetCanTargetSelf(true)
                 .Configure();
 
             AbilityConfigurator.New("Quick Clear Standard", QuickClearStandardGUID)
@@ -130,6 +131,7 @@ namespace gun.Deeds
                 .AddComponent(QuickClearAction)
                 .AddComponent(new HasDamagedFirearm())
                 .AddAbilityResourceLogic(1, isSpendResource: false, requiredResource: Grit.GritResource)
+                .SetCanTargetSelf(true)
                 .Configure();
 
             BlueprintUnitFactReference QuickClearStandardFact = new BlueprintUnitFactReference();

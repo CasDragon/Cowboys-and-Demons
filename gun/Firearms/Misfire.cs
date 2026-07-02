@@ -23,7 +23,7 @@ namespace gun.Firearms
     // Summary:
     //     This is the logic for a weapon with the misfire enhacement to handle missing within misfire range and exploding if damaged
 
-    public class Misfire : WeaponEnchantmentLogic, IInitiatorRulebookHandler<Kingmaker.RuleSystem.Rules.RuleAttackWithWeaponResolve>, IRulebookHandler<Kingmaker.RuleSystem.Rules.RuleAttackWithWeaponResolve>, ISubscriber, IInitiatorRulebookSubscriber
+    public class Misfire : WeaponEnchantmentLogic, IInitiatorRulebookHandler<Kingmaker.RuleSystem.Rules.RuleAttackRoll>, IRulebookHandler<Kingmaker.RuleSystem.Rules.RuleAttackRoll>, ISubscriber, IInitiatorRulebookSubscriber
     {
         int Range;
         Feet Radius;
@@ -35,13 +35,14 @@ namespace gun.Firearms
             explodes = explodeIn;
         }
 
-        public void OnEventAboutToTrigger(RuleAttackWithWeaponResolve evt)
+        public void OnEventAboutToTrigger(RuleAttackRoll evt)
         {
-
+           
         }
 
-        public void OnEventDidTrigger(RuleAttackWithWeaponResolve evt)
+        public void OnEventDidTrigger(RuleAttackRoll evt)
         {
+
             if ((evt.Reason.Ability != null && evt.Reason.Ability.Blueprint.UseCurrentWeaponAsReasonItem && evt.Reason.Caster?.GetFirstWeapon() == base.Owner) || evt.Reason.Item == base.Owner)
             {
                 int tempRange = Range;
@@ -49,8 +50,9 @@ namespace gun.Firearms
                 {
                     tempRange += 2;
                 }
-                if (evt.AttackRoll.Roll <= tempRange)//if we are within the missfire range
+                if ((int)evt.D20 <= tempRange)//if we are within the missfire range
                 {
+                    evt.AutoMiss = true;
                     if (evt.Initiator.Buffs.GetBuff(BlueprintTool.Get<BlueprintBuff>(DamagedFirearm.DamagedFirearmGUID)) != null)//if the user has a damaged firearm
                     {
                         if (explodes)//advanced firearms don't explode so will not trigger this
@@ -63,7 +65,7 @@ namespace gun.Firearms
                                 if (!(misfireSave.Success && misfireSave.ImprovedEvasion))//if the target succeeds and has improved evasion do nothing otherwise
                                 {
                                     //deal misfire damage
-                                    DealMisfireDamage(evt.Initiator, item, evt.AttackWithWeapon.Weapon, (misfireSave.Success || misfireSave.Evasion));
+                                    DealMisfireDamage(evt.Initiator, item, evt.Weapon, (misfireSave.Success || misfireSave.Evasion));
                                 }
                             }
                         }
@@ -71,7 +73,7 @@ namespace gun.Firearms
                     else//otherwise
                     {
                         //damage the firearm
-                        evt.Initiator.AddBuff(BlueprintTool.Get<BlueprintBuff>(DamagedFirearm.DamagedFirearmGUID), evt.Initiator,System.TimeSpan.FromHours(1));
+                        evt.Initiator.AddBuff(BlueprintTool.Get<BlueprintBuff>(DamagedFirearm.DamagedFirearmGUID), evt.Initiator, System.TimeSpan.FromHours(1));
                     }
                 }
             }
@@ -128,7 +130,8 @@ namespace gun.Firearms
     {
         public bool IsCasterRestrictionPassed(UnitEntityData caster)
         {
-            return true;// (caster.GetFeature(BlueprintTool.Get<BlueprintFeature>(DamagedFirearm.DamagedFirearmGUID)) != null);
+            return caster.Buffs.GetBuff(BlueprintTool.Get<BlueprintBuff>(DamagedFirearm.DamagedFirearmGUID)) != null;
+            
         }
 
         public string GetAbilityCasterRestrictionUIText()

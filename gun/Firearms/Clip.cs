@@ -52,7 +52,6 @@ namespace gun.Firearms
                     evt.Initiator.Buffs.GetBuff(BlueprintTool.Get<BlueprintBuff>(BaseFirearm.RoundsGUID)).Remove();//then remove one round
                     Main.Log.Log("Removed Ammo");
                     evt.SkipAnimation = true;
-                    //FirearmFix.Attack(new RulebookEventContext(), evt);
                     return;
                 }
             }

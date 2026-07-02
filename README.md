@@ -12,9 +12,8 @@ All this is due to the fact that assets can only be added (with great difficulty
 * Animations: The Musket and Rifle animate fairly well, though the hand positions can be a little fiddly. Pistols and Revolvers are a little off particularly if you try to dual wield them.
 * Dual Weilding: Whilst technically you can dual wield pistols and revolvers and mechanically most of that works the animation is dodge and the second pistol floats in the air pointing in random directions.
 * Capacity: I haven't implemented any firearms with a capacity of more than 1 round this includes if you are trying to dual wield. until you have Rapid Reload and an Advanced Weapon you'll only be able to fire one shot per attack.
-* Some of the higher level deeds (the ones based that apply effects on attack) aren't working
+* Bleeding Shot will only apply constitution bleed for some reason.
 * I haven't tested misfire yet (also not sure how it should interact with the always a chance mythic feat)
-* Somewhere in the game it decides to add a tooltip to the Armor Piercing Enhancement over the word Piercing (might just rename to Armor Penetrating)
 
 ##Changes from Tabletop
 * Removed several gunslinger deeds which were either very hard to implement in game or would have not do anything within the scope of the game.
