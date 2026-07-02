@@ -13,7 +13,8 @@ All this is due to the fact that assets can only be added (with great difficulty
 * Dual Weilding: Whilst technically you can dual wield pistols and revolvers and mechanically most of that works the animation is dodge and the second pistol floats in the air pointing in random directions.
 * Capacity: I haven't implemented any firearms with a capacity of more than 1 round this includes if you are trying to dual wield. until you have Rapid Reload and an Advanced Weapon you'll only be able to fire one shot per attack.
 * Bleeding Shot will only apply constitution bleed for some reason.
-* I haven't tested misfire yet (also not sure how it should interact with the always a chance mythic feat)
+* Misfire the icon for damaged firearm as well as its name do not apear correctly on the player icon.
+* Damage firearm's null icon does not disapear when the condition is removed (however it ceases to have a mechanical effect.)
 
 ##Changes from Tabletop
 * Removed several gunslinger deeds which were either very hard to implement in game or would have not do anything within the scope of the game.
