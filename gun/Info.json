@@ -1,12 +1,12 @@
 ﻿{
   "Id": "gun",
   "DisplayName": "Cowboys and Demons",
-  "Author": "",
-  "Version": "1.0.0",
+  "Author": "Tom Armstrong",
+  "Version": "0.1.0",
   "ManagerVersion": "0.27.11",
   "Requirements": [],
   "AssemblyName": "gun.dll",
   "EntryMethod": "gun.Main.Load",
-  "HomePage": "",
-  "Repository": ""
+  "HomePage": "https://github.com/Sumotoad987/Cowboys-and-Demons",
+  "Repository": "https://github.com/Sumotoad987/Cowboys-and-Demons"
 }
