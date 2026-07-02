@@ -33,9 +33,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 using static UnityEngine.UI.GridLayoutGroup;
 
-namespace gun.Classes.Gunslinger
+namespace gun.Deeds
 {
-    internal static class Deeds
+    internal static class DeedConfigurator
     {
         public const string QuickClearFeatureGUID = "dc6e1af7153f4559a8f079042c11edbd";
         public const string QuickClearMoveGUID = "f860c6cf75954be5a16f43079a0bae3c";
@@ -104,14 +104,14 @@ namespace gun.Classes.Gunslinger
             AbilityEffectRunAction QuickClearAction = new AbilityEffectRunAction();
             QuickClearAction.SavingThrowType = Kingmaker.EntitySystem.Stats.SavingThrowType.Unknown;
             QuickClearAction.IgnoreCaster = false;
-            QuickClearAction.Actions = new Kingmaker.ElementsSystem.ActionList();
-            QuickClearAction.Actions.Actions = new Kingmaker.ElementsSystem.GameAction[1] { QuickClear };
+            QuickClearAction.Actions = new ActionList();
+            QuickClearAction.Actions.Actions = new GameAction[1] { QuickClear };
 
 
             AbilityConfigurator.New("Quick Clear Move", QuickClearMoveGUID)
-                .SetType(Kingmaker.UnitLogic.Abilities.Blueprints.AbilityType.CombatManeuver)
+                .SetType(AbilityType.CombatManeuver)
                 .SetActionType(Kingmaker.UnitLogic.Commands.Base.UnitCommand.CommandType.Move)
-                .SetRange(Kingmaker.UnitLogic.Abilities.Blueprints.AbilityRange.Personal)
+                .SetRange(AbilityRange.Personal)
                 .SetDisplayName(LocalizationTool.GetString("Deeds.QuickClear.Move.Name"))
                 .SetDescription(LocalizationTool.GetString("Deeds.QuickClear.Move.Description"))
                 .SetIcon(icon)
@@ -121,9 +121,9 @@ namespace gun.Classes.Gunslinger
                 .Configure();
 
             AbilityConfigurator.New("Quick Clear Standard", QuickClearStandardGUID)
-                .SetType(Kingmaker.UnitLogic.Abilities.Blueprints.AbilityType.CombatManeuver)
+                .SetType(AbilityType.CombatManeuver)
                 .SetActionType(Kingmaker.UnitLogic.Commands.Base.UnitCommand.CommandType.Standard)
-                .SetRange(Kingmaker.UnitLogic.Abilities.Blueprints.AbilityRange.Personal)
+                .SetRange(AbilityRange.Personal)
                 .SetDisplayName(LocalizationTool.GetString("Deeds.QuickClear.Standard.Name"))
                 .SetDescription(LocalizationTool.GetString("Deeds.QuickClear.Standard.Description"))
                 .SetIcon(icon)
@@ -221,7 +221,8 @@ namespace gun.Classes.Gunslinger
                 .SetIsFullRoundAction(true)//full round action
                 .AddComponent(new HasLoadedGun())//can only use the ability if they have a loaded gun
                 .SetCanTargetEnemies(true)
-                .SetRange(Kingmaker.UnitLogic.Abilities.Blueprints.AbilityRange.Weapon)//uses weapon range
+                .SetCanTargetSelf(false)
+                .SetRange(AbilityRange.Weapon)//uses weapon range
                 .SetShouldTurnToTarget(true)
                 .SetUseCurrentWeaponAsReasonItem(true)
                 .SetIcon(DefaultIcon)
@@ -244,7 +245,7 @@ namespace gun.Classes.Gunslinger
             AddConfused.UseDurationSeconds = true;//use the seconds
             AddConfused.IsFromSpell = false;//it's not a spell
             Headshot.Actions = new ActionList();//make an action list 
-            Headshot.Actions.Actions = new GameAction[] { AddConfused };//put the action to add confused in there
+            Headshot.Actions.Actions = new GameAction[] { new TargetedShotHead () };//put the action to add confused in there
 
             
             SpellDescriptorComponent MindEffectingDescriptor = new SpellDescriptorComponent();
@@ -256,8 +257,13 @@ namespace gun.Classes.Gunslinger
                 .SetParent(BlueprintTool.GetRef<BlueprintAbilityReference>(TargetingBaseGUID))
                 .AddComponent(Headshot)
                 .AddComponent(MindEffectingDescriptor)
-                .AddAbilityDeliveredByWeapon()//this one includes an attack
+                .SetRange(AbilityRange.Weapon)//uses weapon range
+                .SetShouldTurnToTarget(true)
+                .SetUseCurrentWeaponAsReasonItem(true)
                 .SetIcon(HeadShotIcon)
+                .SetAnimation(Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionCastSpell.CastAnimationStyle.CoupDeGrace)//not at all confident this will work
+                .AllowTargeting(false,true,false,false)
+                .SetIsFullRoundAction(true)//full round action
                 .Configure();
 
             #endregion
@@ -277,7 +283,7 @@ namespace gun.Classes.Gunslinger
             disarmingShot.NewStat = Kingmaker.EntitySystem.Stats.StatType.Dexterity;//disarm manuever but at range and with dex rather than strength
             disarmingShot.ReplaceStat = true;
             ArmShot.Actions = new ActionList();
-            ArmShot.Actions.Actions = new GameAction[1] { disarmingShot };
+            ArmShot.Actions.Actions = new GameAction[1] { new TargetedShotArms() };
 
             AbilityConfigurator.New("TargetingArms", TargetingArmsGUID)
                 .SetDisplayName(LocalizationTool.GetString("Deeds.Targeting.Arms.Name"))
@@ -285,7 +291,12 @@ namespace gun.Classes.Gunslinger
                 .SetParent(BlueprintTool.GetRef<BlueprintAbilityReference>(TargetingBaseGUID))
                 .AddComponent(ArmShot)
                 .SetIcon(ArmShotIcon)
+                .SetRange(AbilityRange.Weapon)//uses weapon range
+                .SetShouldTurnToTarget(true)
+                .SetUseCurrentWeaponAsReasonItem(true)
                 .SetAnimation(Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionCastSpell.CastAnimationStyle.CoupDeGrace)//not at all confident this will work
+                .AllowTargeting(false, true, false, false)
+                .SetIsFullRoundAction(true)//full round action
                 .Configure();
 
             #endregion
@@ -302,14 +313,19 @@ namespace gun.Classes.Gunslinger
             ContextActionApplyBuff AddProne = new ContextActionApplyBuff();//create the action which adds the condition
             AddProne.m_Buff = BlueprintTool.GetRef<BlueprintBuffReference>("24cf3deb078d3df4d92ba24b176bda97");//the prone buff
             LegShot.Actions = new ActionList();
-            LegShot.Actions.Actions = new GameAction[1] { AddProne };
+            LegShot.Actions.Actions = new GameAction[1] { new TargetedShotLegs() };
             AbilityConfigurator.New("TargetingLegs", TargetingLegsGUID)
-                .SetDisplayName(LocalizationTool.GetString("Deeds.Targeting.Legs.Name"))
-                .SetDescription(LocalizationTool.GetString("Deeds.Targeting.Legs.Description"))
+               .SetDisplayName(LocalizationTool.GetString("Deeds.Targeting.Legs.Name"))
+               .SetDescription(LocalizationTool.GetString("Deeds.Targeting.Legs.Description"))
                .SetParent(BlueprintTool.GetRef<BlueprintAbilityReference>(TargetingBaseGUID))
                .AddComponent(LegShot)
-               .AddAbilityDeliveredByWeapon()//this one includes an attack
+               .SetRange(AbilityRange.Weapon)//uses weapon range
+               .SetShouldTurnToTarget(true)
+               .SetUseCurrentWeaponAsReasonItem(true)
                .SetIcon(LegShotIcon)
+               .AllowTargeting(false, true, false, false)
+               .SetAnimation(Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionCastSpell.CastAnimationStyle.CoupDeGrace)//not at all confident this will work
+               .SetIsFullRoundAction(true)//full round action
                .Configure();
             #endregion
 
@@ -328,7 +344,7 @@ namespace gun.Classes.Gunslinger
             TargetingLegsFact.deserializedGuid = BlueprintTool.Get<BlueprintAbility>(TargetingLegsGUID).AssetGuid;
 
             AddFacts TargetingFacts = new AddFacts();
-            TargetingFacts.m_Facts = new BlueprintUnitFactReference[] { TargetingBaseFact, TargetingHeadFact, TargetingArmsFact, TargetingLegsFact };
+            TargetingFacts.m_Facts = new BlueprintUnitFactReference[] { TargetingBaseFact };
 
 
             FeatureConfigurator.New("TargetingFeature", TargetingFeatureGUID)
@@ -371,8 +387,8 @@ namespace gun.Classes.Gunslinger
             AddFactContextActions BleedContextAction = (AddFactContextActions)BasicD4Bleed.Components[0];//find the bit that calls the action to inflict damage
             ContextActionDealDamage BleedDamage = (ContextActionDealDamage)BleedContextAction.NewRound.Actions[0];//take out the part about doing damage
             BleedDamage.Value.DiceType = Kingmaker.RuleSystem.DiceType.One;//change it to be a multiple of 1 not d4s
-            BleedDamage.Value.DiceCountValue.ValueType = Kingmaker.UnitLogic.Mechanics.ContextValueType.CasterProperty;//then with a value based on the caster property rather than a constant
-            BleedDamage.Value.DiceCountValue.Property = Kingmaker.UnitLogic.Mechanics.Properties.UnitProperty.StatDexterity;//and that value is the casters dex
+            BleedDamage.Value.DiceCountValue.ValueType = ContextValueType.CasterProperty;//then with a value based on the caster property rather than a constant
+            BleedDamage.Value.DiceCountValue.Property = UnitProperty.StatDexterity;//and that value is the casters dex
             BleedContextAction.NewRound.Actions[0] = BleedDamage;
 
             BuffConfigurator.New("BasicBleedBuff", BasicBleedBuffGUID)
@@ -384,44 +400,11 @@ namespace gun.Classes.Gunslinger
                 .AddComponent(BasicD4Bleed.Components[2])
                 .AddComponent(BasicD4Bleed.Components[3])
                 .Configure();
-
-            ContextActionApplyBuff BleedAction = new ContextActionApplyBuff();
-            BleedAction.m_Buff = BlueprintTool.GetRef<BlueprintBuffReference>(BasicBleedBuffGUID);
-            #endregion
-
-            #region Conditions
-            ContextSpendResource SpendGrit = new ContextSpendResource();
-            SpendGrit.m_Resource = Grit.GritResource;
-            SpendGrit.Value = new Kingmaker.UnitLogic.Mechanics.ContextValue();
-            SpendGrit.Value.ValueType = Kingmaker.UnitLogic.Mechanics.ContextValueType.Simple;
-            SpendGrit.Value.Value = 1;
-
-            Conditional BleedTriggerCondition = new Conditional();
-
-            HasBuff AlreadyBleeding = new HasBuff();
-            AlreadyBleeding.m_Buff = BlueprintTool.GetRef<BlueprintBuffReference>(BasicBleedBuffGUID);//checks if they have the bleed condition
-            BleedTriggerCondition.ConditionsChecker = new ConditionsChecker();
-            BleedTriggerCondition.ConditionsChecker.Conditions = new Condition[] { AlreadyBleeding };
-            BleedTriggerCondition.IfFalse = new ActionList();
-            BleedTriggerCondition.IfFalse.Actions = new GameAction[] { BleedAction, SpendGrit };
-
-            Conditional GritTrigger = new Conditional();//makes sure the user has enough grit 
-            GritTrigger.ConditionsChecker = new ConditionsChecker();
-            GritTrigger.ConditionsChecker.Conditions = new Condition[] { new HasGrit(1) };
-            GritTrigger.IfTrue = new ActionList();
-            GritTrigger.IfTrue.Actions = new GameAction[] { BleedTriggerCondition };
-
-            AddInitiatorAttackWithWeaponTrigger BleedTrigger = new AddInitiatorAttackWithWeaponTrigger();//this is the bit that is triggered by making an attack
-            BleedTrigger.OnlyHit = true;//only works on a hit
-            BleedTrigger.CheckWeaponCategory = true;//only work if the weapon is of type
-            BleedTrigger.Category = BaseFirearm.FirearmCategory;//firearm
-            BleedTrigger.Action = new ActionList();
-            BleedTrigger.Action.Actions = new GameAction[] { GritTrigger };//then performs the bleedcheck and etc.
             #endregion
 
             #region StandardShot
             BuffConfigurator.New("BleedingShotBuff", BleedingShotBuffGUID)
-                .AddComponent(BleedTrigger)
+                .AddComponent(new BleedingShot(0))
                 .SetDisplayName(LocalizationTool.GetString("Deeds.BleedingShot.Standard.Name"))
                 .SetDescription(LocalizationTool.GetString("Deeds.BleedingShot.Standard.Description"))
                 .SetIcon(BasicD4Bleed.Icon)//copy the icon from standard bleed
@@ -436,16 +419,16 @@ namespace gun.Classes.Gunslinger
             #endregion
 
             #region AttributeBleedSetup
-            SpendGrit.Value.Value = 2;//for all the remaining bleeds the cost is 2 grit not 1
-            BleedTriggerCondition.IfFalse.Actions[1] = SpendGrit;//update the bleed trigger acordingly
-            GritTrigger.ConditionsChecker.Conditions[0] = (new HasGrit(2));
-
+            BasicD4Bleed = BlueprintTool.Get<BlueprintBuff>("5eb68bfe186d71a438d4f85579ce40c1");
+            AddFactContextActions StrBleedContextAction = (AddFactContextActions)BasicD4Bleed.Components[0];
             //adjust bleed damage to be strength bleed
-            BleedDamage.AbilityType = Kingmaker.EntitySystem.Stats.StatType.Strength;
-            BleedDamage.m_Type = ContextActionDealDamage.Type.AbilityDamage;
-            BleedDamage.Value.DiceCountValue.ValueType = ContextValueType.Simple;//the attribute bleed just does a simple
-            BleedDamage.Value.DiceCountValue.Value = 1;//1 damage
-            BleedContextAction.NewRound.Actions[0] = BleedDamage;//update the context action
+            ContextActionDealDamage StrBleedDamage = (ContextActionDealDamage)BleedContextAction.NewRound.Actions[0];
+            StrBleedDamage.AbilityType = Kingmaker.EntitySystem.Stats.StatType.Strength;
+            StrBleedDamage.m_Type = ContextActionDealDamage.Type.AbilityDamage;
+            StrBleedDamage.Value.DiceCountValue.ValueType = ContextValueType.Simple;//the attribute bleed just does a simple
+            StrBleedDamage.Value.DiceType = Kingmaker.RuleSystem.DiceType.One;//change it to be a multiple of 1 not d4s
+            StrBleedDamage.Value.DiceCountValue.Value = 1;//1 damage
+            StrBleedContextAction.NewRound.Actions[0] = StrBleedDamage;//update the context action
             #endregion
 
             #region StrengthBleed
@@ -453,22 +436,14 @@ namespace gun.Classes.Gunslinger
                 .SetDisplayName(LocalizationTool.GetString("Bleed.Strength.Name"))
                 .SetDescription(LocalizationTool.GetString("Bleed.Strength.Description"))
                 .SetIcon(BasicD4Bleed.Icon)//copy the icon from standard bleed
-                .AddComponent(BleedContextAction)//use the newly adjusted bleed context action
+                .AddComponent(StrBleedContextAction)//use the newly adjusted bleed context action
                 .AddComponent(BasicD4Bleed.Components[1])//and the other components can be copyied from the basic bleed
                 .AddComponent(BasicD4Bleed.Components[2])
                 .AddComponent(BasicD4Bleed.Components[3])
                 .Configure();
 
-            BleedAction.m_Buff = BlueprintTool.GetRef<BlueprintBuffReference>(STRBleedBuffGUID);//make the action to apply the buff
-
-            BleedTriggerCondition.IfFalse.Actions[0] = BleedAction;//change the main action for the bleed trigger to apply strength bleed instead
-
-            GritTrigger.IfTrue.Actions[0] = BleedTriggerCondition;
-
-            BleedTrigger.Action.Actions[0] = GritTrigger;//update tghe bleed trigger acordingly
-
             BuffConfigurator.New("BleedingShotSTRBuff", BleedingShotSTRBuffGUID)
-                .AddComponent(BleedTrigger)
+                .AddComponent(new BleedingShot(1))
                 .SetDisplayName(LocalizationTool.GetString("Deeds.BleedingShot.Strength.Name"))
                 .SetDescription(LocalizationTool.GetString("Deeds.BleedingShot.Strength.Description"))
                 .SetIcon(BasicD4Bleed.Icon)//copy the icon from standard bleed
@@ -482,73 +457,30 @@ namespace gun.Classes.Gunslinger
                 .Configure();
             #endregion
 
-            #region ConstitutionBleed
-            //adjust bleed damage to be CON bleed
-            BleedDamage.AbilityType = Kingmaker.EntitySystem.Stats.StatType.Constitution;
-            BleedDamage.m_Type = ContextActionDealDamage.Type.AbilityDamage;
-            BleedContextAction.NewRound.Actions[0] = BleedDamage;//update the context action
-
-            BuffConfigurator.New("CONBleedBuff", CONBleedBuffGUID)
-                .SetDisplayName(LocalizationTool.GetString("Bleed.Constitution.Name"))
-                .SetDescription(LocalizationTool.GetString("Bleed.Constitution.Description"))
-                .SetIcon(BasicD4Bleed.Icon)//copy the icon from standard bleed
-                .AddComponent(BleedContextAction)//use the newly adjusted bleed context action
-                .AddComponent(BasicD4Bleed.Components[1])//and the other components can be copyied from the basic bleed
-                .AddComponent(BasicD4Bleed.Components[2])
-                .AddComponent(BasicD4Bleed.Components[3])
-                .Configure();
-
-            BleedAction.m_Buff = BlueprintTool.GetRef<BlueprintBuffReference>(CONBleedBuffGUID);//make the action to apply the buff
-
-            BleedTriggerCondition.IfFalse.Actions[0] = BleedAction;//change the main action for the bleed trigger to apply strength bleed instead
-
-            GritTrigger.IfTrue.Actions[0] = BleedTriggerCondition;
-
-            BleedTrigger.Action.Actions[0] = GritTrigger;//update tghe bleed trigger acordingly
-
-            BuffConfigurator.New("BleedingShotCONBuff", BleedingShotCONBuffGUID)
-                .AddComponent(BleedTrigger)
-                .SetDisplayName(LocalizationTool.GetString("Deeds.BleedingShot.Constitution.Name"))
-                .SetDescription(LocalizationTool.GetString("Deeds.BleedingShot.Constitution.Description"))
-                .SetIcon(BasicD4Bleed.Icon)//copy the icon from standard bleed
-                .Configure();
-
-            ActivatableAbilityConfigurator.New("BleedingShotCON", BleedingShotCONGUID)
-                .SetBuff(BlueprintTool.GetRef<BlueprintBuffReference>(BleedingShotCONBuffGUID))
-                .SetDisplayName(LocalizationTool.GetString("Deeds.BleedingShot.Constitution.Name"))
-                .SetDescription(LocalizationTool.GetString("Deeds.BleedingShot.Constitution.Description"))
-                .SetIcon(BasicD4Bleed.Icon)//copy the icon from standard bleed
-                .Configure();
-            #endregion
-
             #region DexterityBleed
             //adjust bleed damage to be DEX bleed
-            BleedDamage.AbilityType = Kingmaker.EntitySystem.Stats.StatType.Dexterity;
-            BleedDamage.m_Type = ContextActionDealDamage.Type.AbilityDamage;
-            BleedContextAction.NewRound.Actions[0] = BleedDamage;//update the context action
+            BasicD4Bleed = BlueprintTool.Get<BlueprintBuff>("5eb68bfe186d71a438d4f85579ce40c1");
+            AddFactContextActions DexBleedContextAction = (AddFactContextActions)BasicD4Bleed.Components[0];
+            ContextActionDealDamage DexBleedDamage = (ContextActionDealDamage)DexBleedContextAction.NewRound.Actions[0];
+            DexBleedDamage.AbilityType = Kingmaker.EntitySystem.Stats.StatType.Dexterity;
+            DexBleedDamage.m_Type = ContextActionDealDamage.Type.AbilityDamage;
+            DexBleedDamage.Value.DiceCountValue.ValueType = ContextValueType.Simple;//the attribute bleed just does a simple
+            DexBleedDamage.Value.DiceType = Kingmaker.RuleSystem.DiceType.One;//change it to be a multiple of 1 not d4s
+            DexBleedDamage.Value.DiceCountValue.Value = 1;//1 damage
+            DexBleedContextAction.NewRound.Actions[0] = DexBleedDamage;//update the context action
 
             BuffConfigurator.New("DEXBleedBuff", DEXBleedBuffGUID)
                 .SetDisplayName(LocalizationTool.GetString("Bleed.Dexterity.Name"))
                 .SetDescription(LocalizationTool.GetString("Bleed.Dexterity.Description"))
                 .SetIcon(BasicD4Bleed.Icon)//copy the icon from standard bleed
-                .AddComponent(BleedContextAction)//use the newly adjusted bleed context action
+                .AddComponent(DexBleedContextAction)//use the newly adjusted bleed context action
                 .AddComponent(BasicD4Bleed.Components[1])//and the other components can be copyied from the basic bleed
                 .AddComponent(BasicD4Bleed.Components[2])
                 .AddComponent(BasicD4Bleed.Components[3])
-                .Configure();
-
-            BleedAction.m_Buff = BlueprintTool.GetRef<BlueprintBuffReference>(DEXBleedBuffGUID);//make the action to apply the buff
-
-            BleedTriggerCondition.IfFalse.Actions[0] = BleedAction;//change the main action for the bleed trigger to apply strength bleed instead
-
-            GritTrigger.IfTrue.Actions[0] = BleedTriggerCondition;
-
-            BleedTrigger.Action.Actions[0] = GritTrigger;//update tghe bleed trigger acordingly
-
-            
+                .Configure();            
 
             BuffConfigurator.New("BleedingShotDEXBuff", BleedingShotDEXBuffGUID)
-                .AddComponent(BleedTrigger)
+                .AddComponent(new BleedingShot(2))
                 .SetDisplayName(LocalizationTool.GetString("Deeds.BleedingShot.Dexterity.Name"))
                 .SetDescription(LocalizationTool.GetString("Deeds.BleedingShot.Dexterity.Description"))
                 .SetIcon(BasicD4Bleed.Icon)//copy the icon from standard bleed
@@ -558,6 +490,43 @@ namespace gun.Classes.Gunslinger
                 .SetBuff(BlueprintTool.GetRef<BlueprintBuffReference>(BleedingShotDEXBuffGUID))
                 .SetDisplayName(LocalizationTool.GetString("Deeds.BleedingShot.Dexterity.Name"))
                 .SetDescription(LocalizationTool.GetString("Deeds.BleedingShot.Dexterity.Description"))
+                .SetIcon(BasicD4Bleed.Icon)//copy the icon from standard bleed
+                .Configure();
+            #endregion
+
+            #region ConstitutionBleed
+            //adjust bleed damage to be CON bleed
+            BasicD4Bleed = BlueprintTool.Get<BlueprintBuff>("5eb68bfe186d71a438d4f85579ce40c1");
+            AddFactContextActions ConBleedContextAction = (AddFactContextActions)BasicD4Bleed.Components[0];
+            ContextActionDealDamage ConBleedDamage = (ContextActionDealDamage)ConBleedContextAction.NewRound.Actions[0];
+            ConBleedDamage.AbilityType = Kingmaker.EntitySystem.Stats.StatType.Constitution;
+            ConBleedDamage.m_Type = ContextActionDealDamage.Type.AbilityDamage;
+            ConBleedDamage.Value.DiceCountValue.ValueType = ContextValueType.Simple;//the attribute bleed just does a simple
+            ConBleedDamage.Value.DiceType = Kingmaker.RuleSystem.DiceType.One;//change it to be a multiple of 1 not d4s
+            ConBleedDamage.Value.DiceCountValue.Value = 1;//1 damage
+            ConBleedContextAction.NewRound.Actions[0] = ConBleedDamage;//update the context action
+
+            BuffConfigurator.New("CONBleedBuff", CONBleedBuffGUID)
+                .SetDisplayName(LocalizationTool.GetString("Bleed.Constitution.Name"))
+                .SetDescription(LocalizationTool.GetString("Bleed.Constitution.Description"))
+                .SetIcon(BasicD4Bleed.Icon)//copy the icon from standard bleed
+                .AddComponent(ConBleedContextAction)//use the newly adjusted bleed context action
+                .AddComponent(BasicD4Bleed.Components[1])//and the other components can be copyied from the basic bleed
+                .AddComponent(BasicD4Bleed.Components[2])
+                .AddComponent(BasicD4Bleed.Components[3])
+                .Configure();
+
+            BuffConfigurator.New("BleedingShotCONBuff", BleedingShotCONBuffGUID)
+                .AddComponent(new BleedingShot(3))
+                .SetDisplayName(LocalizationTool.GetString("Deeds.BleedingShot.Constitution.Name"))
+                .SetDescription(LocalizationTool.GetString("Deeds.BleedingShot.Constitution.Description"))
+                .SetIcon(BasicD4Bleed.Icon)//copy the icon from standard bleed
+                .Configure();
+
+            ActivatableAbilityConfigurator.New("BleedingShotCON", BleedingShotCONGUID)
+                .SetBuff(BlueprintTool.GetRef<BlueprintBuffReference>(BleedingShotCONBuffGUID))
+                .SetDisplayName(LocalizationTool.GetString("Deeds.BleedingShot.Constitution.Name"))
+                .SetDescription(LocalizationTool.GetString("Deeds.BleedingShot.Constitution.Description"))
                 .SetIcon(BasicD4Bleed.Icon)//copy the icon from standard bleed
                 .Configure();
             #endregion
@@ -650,78 +619,11 @@ namespace gun.Classes.Gunslinger
 
         public static void StunningShot()
         {
-            UnitPropertyConfigurator StunningShotDC = UnitPropertyConfigurator.New("StunningShotDC", StunningShotDCGUID);
-            SummClassLevelGetter GunslingerLevel = new SummClassLevelGetter();
-            Kingmaker.UnitLogic.Mechanics.Properties.StatValueGetter Wis = new StatValueGetter();
-            Wis.Stat = Kingmaker.EntitySystem.Stats.StatType.Wisdom;
-            GunslingerLevel.Settings = new PropertySettings();
-            GunslingerLevel.Settings.m_Progression = PropertySettings.Progression.Div2;
-            GunslingerLevel.m_Class.AddItem(BlueprintTool.GetRef<BlueprintCharacterClassReference>(Gunslinger.GunslingerClassGUID));
-            StunningShotDC.AddComponent(GunslingerLevel);
-            StunningShotDC.AddComponent(Wis);
-            StunningShotDC.SetBaseValue(10);
-            StunningShotDC.Configure();
-
-            ContextActionApplyBuff StunAction = new ContextActionApplyBuff();
-            StunAction.m_Buff = BlueprintTool.GetRef<BlueprintBuffReference>("09d39b38bb7c6014394b6daced9bacd3");//stunned condition
-            StunAction.IsFromSpell = false;
-            StunAction.DurationSeconds = 6;
-            StunAction.UseDurationSeconds = true;
-
-
-            ContextActionSavingThrow StunSave = new ContextActionSavingThrow();
-            StunSave.Type = Kingmaker.EntitySystem.Stats.SavingThrowType.Fortitude;
-            ContextValue SaveDC = new ContextValue();
-            SaveDC.m_CustomProperty = BlueprintTool.GetRef<BlueprintUnitPropertyReference>(StunningShotDCGUID);
-            SaveDC.ValueType = ContextValueType.CasterCustomProperty;
-            StunSave.CustomDC = SaveDC;
-            StunSave.HasCustomDC = true;
-            ContextActionConditionalSaved StunSaveCondition = new ContextActionConditionalSaved();
-            StunSaveCondition.Failed = new ActionList();
-            StunSaveCondition.Failed.Actions = new GameAction[] { StunAction };
-            StunSave.Actions = new ActionList();
-            StunSave.Actions.Actions = new GameAction[] {StunSaveCondition};
-
-
-
-
-
-            ContextSpendResource SpendGrit = new ContextSpendResource();
-            SpendGrit.m_Resource = Grit.GritResource;
-            SpendGrit.Value = new Kingmaker.UnitLogic.Mechanics.ContextValue();
-            SpendGrit.Value.ValueType = Kingmaker.UnitLogic.Mechanics.ContextValueType.Simple;
-            SpendGrit.Value.Value = 1;
-
-            Conditional StunConditionTrigger = new Conditional();
-
-            HasBuff AlreadyBleeding = new HasBuff();
-            AlreadyBleeding.m_Buff = BlueprintTool.GetRef<BlueprintBuffReference>(BasicBleedBuffGUID);//checks if they have the bleed condition
-            StunConditionTrigger.ConditionsChecker = new ConditionsChecker();
-            StunConditionTrigger.ConditionsChecker.Conditions = new Condition[] { AlreadyBleeding };
-            StunConditionTrigger.IfFalse = new ActionList();
-            StunConditionTrigger.IfFalse.Actions = new GameAction[] { StunSave };//if they are not bleeding make them bleed then spend the grit
-            StunConditionTrigger.IfFalse.Actions.AddItem(SpendGrit);//not certain if this is going to try and consume grit from the target rather than the user
-
-            Conditional GritTrigger = new Conditional();//makes sure the user has enough grit 
-            GritTrigger.ConditionsChecker = new ConditionsChecker();
-            GritTrigger.ConditionsChecker.Conditions = new Condition[] { new HasGrit(2) };
-            GritTrigger.IfTrue = new ActionList();
-            GritTrigger.IfTrue.Actions = new GameAction[] { StunConditionTrigger };
-            //I suspect one or both of the two conditions might struggle in terms of whether they are checking the right target
-
-
-            AddInitiatorAttackWithWeaponTrigger StunTrigger = new AddInitiatorAttackWithWeaponTrigger();//this is the bit that is triggered by making an attack
-            StunTrigger.OnlyHit = true;//only works on a hit
-            StunTrigger.CheckWeaponCategory = true;//only work if the weapon is of type
-            StunTrigger.Category = BaseFirearm.FirearmCategory;//firearm/heavy crossbow
-            StunTrigger.Action = new ActionList();
-            StunTrigger.Action.Actions = new GameAction[] { GritTrigger };//then performs the gritcheck and etc.
-
-
+            
             Sprite icon = BlueprintTool.Get<BlueprintBuff>("09d39b38bb7c6014394b6daced9bacd3").Icon;
 
             BuffConfigurator.New("StunningShotBuff", StunningShotBuffGUID)
-                .AddComponent(StunTrigger)
+                .AddComponent(new StunningShot())
                 .SetDisplayName(LocalizationTool.GetString("Deeds.StunningShot.Name"))
                 .SetDescription(LocalizationTool.GetString("Deeds.StunningShot.Description"))
                 .SetIcon(icon)
@@ -729,7 +631,6 @@ namespace gun.Classes.Gunslinger
 
             ActivatableAbilityConfigurator.New("StunningShot", StunningShotGUID)
                 .SetBuff(BlueprintTool.GetRef<BlueprintBuffReference>(StunningShotBuffGUID))
-                .AddActivatableAbilityResourceLogic(requiredResource:Grit.GritResource, spendType: ActivatableAbilityResourceLogic.ResourceSpendType.Never)
                 .SetDisplayName(LocalizationTool.GetString("Deeds.StunningShot.Name"))
                 .SetDescription(LocalizationTool.GetString("Deeds.StunningShot.Description"))
                 .SetIcon(icon)

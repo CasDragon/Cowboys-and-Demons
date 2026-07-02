@@ -1,9 +1,9 @@
 # Cowboys and Demons
 
-Adds the [Gunslinger]() class as well as firearms and some associated feats such as weapon focus and firearm proficiency. 
+Adds the [Gunslinger](https://aonprd.com/ClassDisplay.aspx?ItemName=Gunslinger) class as well as firearms and some associated feats such as weapon focus and firearm proficiency. 
 
 ##Instalation Guide
-Hopefully Modfinder will be able to sort this out but for manual install it is important to note this mod had to be split into two parts. This repo contains the content of the mod so the code, blueprint, mechanics, feats, etc. The [Cowboy's and Demons Assets] (https://github.com/Sumotoad987/Cowboys-and-Demons-Assets) mod contains the 3d model used for the firearms in game.
+Hopefully Modfinder will be able to sort this out but for manual install it is important to note this mod had to be split into two parts. This repo contains the content of the mod so the code, blueprint, mechanics, feats, etc. The [Cowboy's and Demons Assets](https://github.com/Sumotoad987/Cowboys-and-Demons-Assets) mod contains the 3d model used for the firearms in game.
 All this is due to the fact that assets can only be added (with great difficulty) through a Wrath Template mod while much of the content was far easier to implement in a using Blueprint Core.
 (I intend to write a tutorial to explain how all this works in case anyone else wants to add 3d models to the game at a later stage)
 

@@ -1,5 +1,6 @@
 ﻿using BlueprintCore.Blueprints.CustomConfigurators.Classes;
 using BlueprintCore.Utils;
+using gun.Deeds;
 using gun.Firearms;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
@@ -44,13 +45,13 @@ namespace gun.Classes.Gunslinger
             GunslingProgression.SetLevelEntry(1, //Level 1
                                 GunslingerProficienciesGUID,              //Weapon and Armour Proficiencies
                                 Grit.GritFeatureGUID,                     //Grit
-                                Deeds.QuickClearFeatureGUID               //Deeds (only quick clear seems likely to work)
+                                DeedConfigurator.QuickClearFeatureGUID               //Deeds (only quick clear seems likely to work)
                                 )
                 .SetLevelEntry(2,//Level 2
                                 Nimble.NimbleUnlockGUID//Nimble gain a +1 dodge bonus to AC when wearing light or no Armor
                 )
                 .SetLevelEntry(3,//Level 3
-                                Deeds.SlingerInitUnlockGUID//Gunslinger Initiative:if has any grit gain +2 initiative
+                                DeedConfigurator.SlingerInitUnlockGUID//Gunslinger Initiative:if has any grit gain +2 initiative
                                                            //the other two seem either no useful in game or tricky to implement
                                                            //though I might be able to do pistol whip, which seems to be make a melee attack with the weapon then attempt to trip oponent as standard action costing 1 grit
                 )
@@ -67,7 +68,7 @@ namespace gun.Classes.Gunslinger
                                  //Deeds
                                  //Deadshot looks really complicated for not much benefit
                                  //startling shot also looks kind of bad but I can probably make it work
-                                Deeds.TargetingFeatureGUID//Targeting is cool and should be workable limit to arms legs and head
+                                DeedConfigurator.TargetingFeatureGUID//Targeting is cool and should be workable limit to arms legs and head
                 )
                 .SetLevelEntry(8,
                                  "41c8486641f7d6d4283ca9dae4147a9f"//Bonus Feat Selection
@@ -79,7 +80,7 @@ namespace gun.Classes.Gunslinger
                 .SetLevelEntry(11,//Level 11
                                   //Deeds
                                   //Bleeding wound should be possible
-                                 Deeds.BleedingShotFeatureGUID
+                                 DeedConfigurator.BleedingShotFeatureGUID
                 //Expert loading seems annoying but possible
                 //not sure lightning reload does much so might ignore for now
                 )
@@ -91,7 +92,7 @@ namespace gun.Classes.Gunslinger
                                  //Nimble +4 (this is part of the base nimble feature)
                 )
                 .SetLevelEntry(15,//Level 15 
-                                 Deeds.EvasiveDeedGUID//Evasive: so long as she has 1 grit she gains the benefit of the evasion, uncanny dodge, and improved uncanny dodge rogue class features. She uses her gunslinger level as her rogue level for improved uncanny dodge. 
+                                 DeedConfigurator.EvasiveDeedGUID//Evasive: so long as she has 1 grit she gains the benefit of the evasion, uncanny dodge, and improved uncanny dodge rogue class features. She uses her gunslinger level as her rogue level for improved uncanny dodge. 
                                                       //Menacing Shot (Ex) (Ultimate Combat pg. 12): At 15th level, the gunslinger can spend 1 grit point, shoot a firearm into the air, and affect all living creatures within a 30-foot-radius burst as if they were subject to the fear spell. The DC of this effect is equal to 10 + 1/2 the gunslinger's level + the gunslinger's Wisdom modifier.
                 )
                 .SetLevelEntry(16,//Level 16
@@ -103,7 +104,7 @@ namespace gun.Classes.Gunslinger
                                  //Nimble +5 (this is part of the base nimble feature)
                 )
                 .SetLevelEntry(19,//Level 19
-                                 Deeds.StunningShotFeatureGUID//Stunning Shot (Ex) (Ultimate Combat pg. 12): At 19th level, when a gunslinger hits a creature, she can spend 2 grit points to stun the creature for 1 round. The creature must make a Fortitude saving throw (the DC = 10 + 1/2 the gunslinger's level + the gunslinger's Wisdom modifier). If the creature fails, it is stunned for 1 round. Creatures that are immune to critical hits are also immune to this effect. 
+                                 DeedConfigurator.StunningShotFeatureGUID//Stunning Shot (Ex) (Ultimate Combat pg. 12): At 19th level, when a gunslinger hits a creature, she can spend 2 grit points to stun the creature for 1 round. The creature must make a Fortitude saving throw (the DC = 10 + 1/2 the gunslinger's level + the gunslinger's Wisdom modifier). If the creature fails, it is stunned for 1 round. Creatures that are immune to critical hits are also immune to this effect. 
                 )
                 .SetLevelEntry(20,//Level 20
                                   "41c8486641f7d6d4283ca9dae4147a9f",//Bonus Feat Selection

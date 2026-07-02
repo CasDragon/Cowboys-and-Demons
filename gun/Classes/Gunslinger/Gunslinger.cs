@@ -2,6 +2,7 @@
 using BlueprintCore.Blueprints.CustomConfigurators.Classes;
 using BlueprintCore.Blueprints.CustomConfigurators.UnitLogic.Buffs;
 using BlueprintCore.Utils;
+using gun.Deeds;
 using gun.Firearms;
 using HarmonyLib;
 using Kingmaker.Blueprints;
@@ -29,7 +30,7 @@ namespace gun.Classes.Gunslinger
         {
             Nimble.Configure();
             Grit.Configure();
-            Deeds.Configure();
+            DeedConfigurator.Configure();
             GunTraining.Configure();
             Progression.Configure();
 

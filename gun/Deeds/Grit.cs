@@ -5,6 +5,7 @@ using BlueprintCore.Blueprints.CustomConfigurators;
 using BlueprintCore.Blueprints.CustomConfigurators.Classes;
 using BlueprintCore.Utils;
 using BlueprintCore.Utils.Types;
+using gun.Classes.Gunslinger;
 using gun.Firearms;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
@@ -38,7 +39,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace gun.Classes.Gunslinger
+namespace gun.Deeds
 {
     internal static class Grit
     {
@@ -122,7 +123,7 @@ namespace gun.Classes.Gunslinger
 
         public void UpdateBuffStateIfCorrectUnit(UnitEntityData unit)
         {
-            if (!(unit != base.Owner))
+            if (!(unit != Owner))
             {
                 CheckEligibility();
             }
@@ -130,7 +131,7 @@ namespace gun.Classes.Gunslinger
 
         public void CheckEligibility()
         {//this is the only fact of the class I changed
-            if (base.Owner.Resources.HasEnoughResource(Grit.GritResource,1))
+            if (Owner.Resources.HasEnoughResource(Grit.GritResource,1))
             {
                 AddFact();
             }
@@ -142,17 +143,17 @@ namespace gun.Classes.Gunslinger
 
         public void AddFact()
         {
-            if (base.Data.AppliedFact == null)
+            if (Data.AppliedFact == null)
             {
-                base.Data.AppliedFact = base.Owner.AddFact(NewFact);
+                Data.AppliedFact = Owner.AddFact(NewFact);
             }
         }
         public void RemoveFact()
         {
-            if (base.Data.AppliedFact != null)
+            if (Data.AppliedFact != null)
             {
-                base.Owner.RemoveFact(base.Data.AppliedFact);
-                base.Data.AppliedFact = null;
+                Owner.RemoveFact(Data.AppliedFact);
+                Data.AppliedFact = null;
             }
         }
     }
