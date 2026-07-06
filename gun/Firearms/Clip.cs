@@ -45,13 +45,13 @@ namespace gun.Firearms
             {
                 if (evt.Initiator.Buffs.GetBuff(BlueprintTool.Get<BlueprintBuff>(BaseFirearm.RoundsGUID)) == null)//if the firer has no stacks of the rounds buff (used to track ammo)
                 {
-                    evt.SkipMainDamage = true;  //the weapon will do no damage seems to be the only solution I have so far 
+                    evt.AttackRoll.Result = AttackResult.Miss; 
                 }
                 else
                 {//if there are rounds 
                     evt.Initiator.Buffs.GetBuff(BlueprintTool.Get<BlueprintBuff>(BaseFirearm.RoundsGUID)).Remove();//then remove one round
                     Main.Log.Log("Removed Ammo");
-                    evt.SkipAnimation = true;
+                    //evt.SkipAnimation = true;
                     return;
                 }
             }
@@ -75,7 +75,7 @@ namespace gun.Firearms
                 {
                     if (Rounds == null)//if the firer has no stacks of the rounds buff (used to track ammo)
                     {
-                        evt.AttackRoll.AutoMiss = true;  //the weapon will automatically miss if there is no ammo
+                        evt.AttackRoll.Result = AttackResult.Miss;  //the weapon will automatically miss if there is no ammo
                                                  
                     }
                     else
@@ -85,7 +85,23 @@ namespace gun.Firearms
                 }
                 
             }
-            evt.SkipAnimation = true;
+            if (evt.Weapon.WeaponVisualParameters.Prototype == null)
+            {
+                Main.Log.Log("prototype null");
+            }
+            else
+            {
+                Main.Log.Log("prototype not null");
+            }
+            if (evt.Weapon.WeaponVisualParameters.m_Projectiles.Length != 0)
+            {
+                Main.Log.Log("has projectile");
+            }
+            else 
+            {
+                Main.Log.Log("has no projectiles");
+            }
+            //evt.SkipAnimation = true;
             //FirearmFix.Attack(new RulebookEventContext(), evt);
         }
 

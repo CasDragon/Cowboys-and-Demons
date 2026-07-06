@@ -386,18 +386,18 @@ namespace gun.Deeds
         {
             #region StandardBleedBuff
             BlueprintBuff BasicD4Bleed = BlueprintTool.Get<BlueprintBuff>("5eb68bfe186d71a438d4f85579ce40c1");//gets the basic d4 bleed from the game
-            AddFactContextActions BleedContextAction = (AddFactContextActions)BasicD4Bleed.Components[0];//find the bit that calls the action to inflict damage
-            ContextActionDealDamage BleedDamage = (ContextActionDealDamage)BleedContextAction.NewRound.Actions[0];//take out the part about doing damage
+            AddFactContextActions BleedContextAction = Utilities.Clone((AddFactContextActions)BasicD4Bleed.Components[0]);
+            ContextActionDealDamage BleedDamage = Utilities.Clone((ContextActionDealDamage)BleedContextAction.NewRound.Actions[0]);
             BleedDamage.Value.DiceType = Kingmaker.RuleSystem.DiceType.One;//change it to be a multiple of 1 not d4s
             BleedDamage.Value.DiceCountValue.ValueType = ContextValueType.CasterProperty;//then with a value based on the caster property rather than a constant
-            BleedDamage.Value.DiceCountValue.Property = UnitProperty.StatDexterity;//and that value is the casters dex
+            BleedDamage.Value.DiceCountValue.Property = UnitProperty.StatBonusDexterity;//and that value is the casters dex
             BleedContextAction.NewRound.Actions[0] = BleedDamage;
 
             BuffConfigurator.New("BasicBleedBuff", BasicBleedBuffGUID)
                 .SetDisplayName(LocalizationTool.GetString("Bleed.Standard.Name"))
                 .SetDescription(LocalizationTool.GetString("Bleed.Standard.Description"))
                 .SetIcon(BasicD4Bleed.Icon)//copy the icon from standard bleed
-                .AddComponent(BleedContextAction)//use the newly adjusted bleed context action
+                .AddComponent(BleedContextAction)
                 .AddComponent(BasicD4Bleed.Components[1])//and the other components can be copyied from the basic bleed
                 .AddComponent(BasicD4Bleed.Components[2])
                 .AddComponent(BasicD4Bleed.Components[3])
@@ -422,9 +422,9 @@ namespace gun.Deeds
 
             #region AttributeBleedSetup
             BasicD4Bleed = BlueprintTool.Get<BlueprintBuff>("5eb68bfe186d71a438d4f85579ce40c1");
-            AddFactContextActions StrBleedContextAction = (AddFactContextActions)BasicD4Bleed.Components[0];
+            AddFactContextActions StrBleedContextAction = Utilities.Clone((AddFactContextActions)BasicD4Bleed.Components[0]);
             //adjust bleed damage to be strength bleed
-            ContextActionDealDamage StrBleedDamage = (ContextActionDealDamage)BleedContextAction.NewRound.Actions[0];
+            ContextActionDealDamage StrBleedDamage = Utilities.Clone((ContextActionDealDamage)BleedContextAction.NewRound.Actions[0]);
             StrBleedDamage.AbilityType = Kingmaker.EntitySystem.Stats.StatType.Strength;
             StrBleedDamage.m_Type = ContextActionDealDamage.Type.AbilityDamage;
             StrBleedDamage.Value.DiceCountValue.ValueType = ContextValueType.Simple;//the attribute bleed just does a simple
@@ -461,14 +461,8 @@ namespace gun.Deeds
 
             #region DexterityBleed
             //adjust bleed damage to be DEX bleed
-            BasicD4Bleed = BlueprintTool.Get<BlueprintBuff>("5eb68bfe186d71a438d4f85579ce40c1");
-            AddFactContextActions DexBleedContextAction = (AddFactContextActions)BasicD4Bleed.Components[0];
-            ContextActionDealDamage DexBleedDamage = (ContextActionDealDamage)DexBleedContextAction.NewRound.Actions[0];
-            DexBleedDamage.AbilityType = Kingmaker.EntitySystem.Stats.StatType.Dexterity;
-            DexBleedDamage.m_Type = ContextActionDealDamage.Type.AbilityDamage;
-            DexBleedDamage.Value.DiceCountValue.ValueType = ContextValueType.Simple;//the attribute bleed just does a simple
-            DexBleedDamage.Value.DiceType = Kingmaker.RuleSystem.DiceType.One;//change it to be a multiple of 1 not d4s
-            DexBleedDamage.Value.DiceCountValue.Value = 1;//1 damage
+            AddFactContextActions DexBleedContextAction = Utilities.Clone((AddFactContextActions)BasicD4Bleed.Components[0]);
+            ContextActionDealDamage DexBleedDamage = Utilities.Clone(StrBleedDamage);
             DexBleedContextAction.NewRound.Actions[0] = DexBleedDamage;//update the context action
 
             BuffConfigurator.New("DEXBleedBuff", DEXBleedBuffGUID)
@@ -498,14 +492,9 @@ namespace gun.Deeds
 
             #region ConstitutionBleed
             //adjust bleed damage to be CON bleed
-            BasicD4Bleed = BlueprintTool.Get<BlueprintBuff>("5eb68bfe186d71a438d4f85579ce40c1");
-            AddFactContextActions ConBleedContextAction = (AddFactContextActions)BasicD4Bleed.Components[0];
-            ContextActionDealDamage ConBleedDamage = (ContextActionDealDamage)ConBleedContextAction.NewRound.Actions[0];
+            AddFactContextActions ConBleedContextAction = Utilities.Clone((AddFactContextActions)BasicD4Bleed.Components[0]);
+            ContextActionDealDamage ConBleedDamage = Utilities.Clone(StrBleedDamage);
             ConBleedDamage.AbilityType = Kingmaker.EntitySystem.Stats.StatType.Constitution;
-            ConBleedDamage.m_Type = ContextActionDealDamage.Type.AbilityDamage;
-            ConBleedDamage.Value.DiceCountValue.ValueType = ContextValueType.Simple;//the attribute bleed just does a simple
-            ConBleedDamage.Value.DiceType = Kingmaker.RuleSystem.DiceType.One;//change it to be a multiple of 1 not d4s
-            ConBleedDamage.Value.DiceCountValue.Value = 1;//1 damage
             ConBleedContextAction.NewRound.Actions[0] = ConBleedDamage;//update the context action
 
             BuffConfigurator.New("CONBleedBuff", CONBleedBuffGUID)

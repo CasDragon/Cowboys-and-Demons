@@ -50,6 +50,7 @@ namespace gun.Firearms
         const string ArmorPiercingGUID = "027bf51a88d94dbc86bf8848d2f2cff0";
         const string CapacityGUID = "e712d0661d0f4507af2f18addf53cab3";
         public const string RoundsGUID = "72a83c73e7ce42e0adb54339c6098f21";
+        public const string EmptyClipGUID = "edb55d77d6fd4562afbb535626bb55e1";
         const string ReloadOneHandGUID = "84a5658968e04f6f91a9b32a1b4462f5";
         const string ReloadOneHandFeatureGUID = "5d503d48e12b4fb38aea53fca2de8768";
         const string ReloadTwoHandGUID = "45a3e148603f4960bfdd820cc95c8cd3";
@@ -96,6 +97,16 @@ namespace gun.Firearms
                 .SetStacking(Kingmaker.UnitLogic.Buffs.Blueprints.StackingType.Stack)//it stacks and the number of stacks is the max number of rounds
                 .Configure();
                 ;
+
+            //creates a condition to handle having no rounds left
+            AddCondition EmptyClipCondition = new AddCondition();
+            EmptyClipCondition.Condition = Kingmaker.UnitLogic.UnitCondition.CantAct;
+            BuffConfigurator.New("EmptyClip", EmptyClipGUID)
+                .SetStacking(Kingmaker.UnitLogic.Buffs.Blueprints.StackingType.Replace)
+                .Configure();
+            ;
+
+
 
             FeatureConfigurator.New("OneHandReloadingFeature", ReloadOneHandFeatureGUID)
                 .AddFacts(new List<Blueprint<BlueprintUnitFactReference>> {BlueprintTool.GetRef<BlueprintUnitFactReference>(ReloadOneHandGUID), BlueprintTool.GetRef<BlueprintUnitFactReference>(RapidReloadOneHandGUID) })
@@ -168,11 +179,15 @@ namespace gun.Firearms
             reloadSingle.IsFromSpell = false;
             reloadSingle.IsNotDispelable = true;
 
+            ContextActionRemoveBuff clearEmptyClip = new ContextActionRemoveBuff();
+            clearEmptyClip.m_Buff = BlueprintTool.GetRef<BlueprintBuffReference>(EmptyClipGUID);
+            clearEmptyClip.ToCaster = true;
+
             AbilityEffectRunAction reloadSingleEffect = new AbilityEffectRunAction();
             reloadSingleEffect.SavingThrowType = Kingmaker.EntitySystem.Stats.SavingThrowType.Unknown;
             reloadSingleEffect.IgnoreCaster = false;
             reloadSingleEffect.Actions = new Kingmaker.ElementsSystem.ActionList();
-            reloadSingleEffect.Actions.Actions = new Kingmaker.ElementsSystem.GameAction[1] { reloadSingle };
+            reloadSingleEffect.Actions.Actions = new Kingmaker.ElementsSystem.GameAction[2] { reloadSingle, clearEmptyClip };
             //reloadSingleEffect.Actions.Actions.AddItem(reloadSingle);
 
 
@@ -242,22 +257,27 @@ namespace gun.Firearms
         {
             PrefabLink model = new PrefabLink();
             model.AssetId = ModelID;
-            WeaponVisualParameters visuals = new WeaponVisualParameters();
+            WeaponVisualParameters visuals = Utilities.Clone(BlueprintTool.Get<BlueprintWeaponType>("36d0551b8a28587438a47fcbbf53c083").m_VisualParameters);//use the heavy crossbow visuals as a base
             visuals.m_WeaponAnimationStyle = Kingmaker.View.Animation.WeaponAnimationStyle.Crossbow;
-            visuals.m_Projectiles = new BlueprintProjectileReference[1] { BlueprintTool.GetRef<BlueprintProjectileReference>(ProjectileRef) };
+            //visuals.m_Projectiles = new BlueprintProjectileReference[1] { BlueprintTool.GetRef<BlueprintProjectileReference>(ProjectileRef) };
+            //visuals.m_Projectiles = new BlueprintProjectileReference[0] { };
             visuals.m_SpecialAnimation = Kingmaker.Visual.Animation.Kingmaker.UnitAnimationSpecialAttackType.None;
             visuals.m_WeaponModel = model;//not sure this is right but will run with it for now
             visuals.m_OverrideAttachSlots = false;
             visuals.m_ReachFXThresholdBonus = 0;
             visuals.m_SoundSize = Kingmaker.Visual.Sound.WeaponSoundSizeType.Medium;//not sure what this is for
             visuals.m_SoundType = Kingmaker.Visual.Sound.WeaponSoundType.PierceMetal;//not sure what this does yet either will need to give some through
-            //visuals.m_WhooshSound = CrossbowShot; //Not sure what this is or how to set it
+            //visuals.m_WhooshSound = "CrossbowShot"; //Not sure what this is or how to set it
             visuals.m_MissSoundType = Kingmaker.Visual.Sound.WeaponMissSoundType.MediumMetal;//not sure if this is the right one but will go with it for now
             //visuals.m_EquipSound = Weapon_Bow_Equip; don't know how to set these
             //visuals.m_UnequipSound = Weapon_Bow_Remove;
             //visuals.m_InventoryUnequipSound = BowEquip;
             //visuals.m_InventoryPutSound = CrossbowPut;
             //visuals.m_InventoryTakeSound = CrossbowTake;
+            if (visuals.Projectiles.Length != 0)
+            {
+                Main.Log.Log("has projectiles");
+            }
             return visuals;
 
         }
@@ -392,8 +412,11 @@ namespace gun.Firearms
             ItemWeaponConfigurator BasicWeapon = ItemWeaponConfigurator.New(name, ID);
             BasicWeapon.SetCost(cost);
             BasicWeapon.SetType(BlueprintTool.GetRef<BlueprintWeaponTypeReference>(TypeID));
-            BasicWeapon.ModifyVisualParameters((WeaponVisualParameters vis) => vis.m_Projectiles = new BlueprintProjectileReference[1] { BlueprintTool.GetRef<BlueprintProjectileReference>(ProjectileRef) });
+            WeaponVisualParameters visuals = Utilities.Clone(BlueprintTool.Get<BlueprintItemWeapon>("19a5092244dcf99478dcd73c974828b1").m_VisualParameters);//copy the visual parameters off the standard heavy crossbow
+            BasicWeapon.SetVisualParameters(visuals);
+            //BasicWeapon.ModifyVisualParameters((WeaponVisualParameters vis) => vis.m_Projectiles = new BlueprintProjectileReference[] {});
             //BasicWeapon.Configure();
+
             return BasicWeapon;
             //this function returns the configurator so the configure function can be called outside in case anyting special needs to be added
         }

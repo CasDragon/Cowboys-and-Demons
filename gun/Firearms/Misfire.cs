@@ -16,6 +16,7 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.Utility;
+using UnityEngine;
 namespace gun.Firearms
 {
 
@@ -52,8 +53,9 @@ namespace gun.Firearms
                 }
                 if ((int)evt.D20 <= tempRange)//if we are within the missfire range
                 {
-                    evt.AutoMiss = true;
-                    if (evt.Initiator.Buffs.GetBuff(BlueprintTool.Get<BlueprintBuff>(DamagedFirearm.DamagedFirearmGUID)) != null)//if the user has a damaged firearm
+                    //evt.AutoMiss = true;
+                    evt.Result = AttackResult.Miss;//the attack is treated as a miss
+                    if (evt.Initiator.Buffs.GetBuff(BlueprintTool.Get<BlueprintBuff>(DamagedFirearm.DamagedFirearmGUID)) != null && evt.Initiator.Buffs.GetBuff(BlueprintTool.Get<BlueprintBuff>(BaseFirearm.RoundsGUID)) != null)//if the user has a damaged firearm and a round in the clip
                     {
                         if (explodes)//advanced firearms don't explode so will not trigger this
                         {
@@ -73,7 +75,7 @@ namespace gun.Firearms
                     else//otherwise
                     {
                         //damage the firearm
-                        evt.Initiator.AddBuff(BlueprintTool.Get<BlueprintBuff>(DamagedFirearm.DamagedFirearmGUID), evt.Initiator, System.TimeSpan.FromHours(1));
+                        evt.Initiator.AddBuff(BlueprintTool.Get<BlueprintBuff>(DamagedFirearm.DamagedFirearmGUID), Context, System.TimeSpan.FromHours(1));
                     }
                 }
             }
@@ -87,15 +89,15 @@ namespace gun.Firearms
             foreach (DamageDescription item in ruleCalculateWeaponStats.DamageDescription)
             {
                 BaseDamage damage = item.CreateDamage();
-
+                
                 damage.Half = new ValueWithSource<bool>(half);//hopefully this will half damage on sucessful save
                 if (damageBundle == null)
                 {
-                    damageBundle = new DamageBundle(weapon, item.CreateDamage());
+                    damageBundle = new DamageBundle(weapon, damage);
                 }
                 else
                 {
-                    damageBundle.Add(item.CreateDamage());
+                    damageBundle.Add(damage);
                 }
             }
             if (damageBundle != null)
@@ -119,9 +121,16 @@ namespace gun.Firearms
         //     This sets up the Damaged Firearm condition that can be applied to a character when they misfire.
         public static void Configure()
         {
+            byte[] data = File.ReadAllBytes(Main.ModPath + "/Media/Icons/DamagedFirearm.png");
+            Texture2D texture2D = new Texture2D(64, 64);
+            texture2D.LoadImage(data);
+            Sprite icon = Sprite.Create(texture2D, new Rect(0f, 0f, 64, 64), new Vector2(0f, 0f));
+
             BuffConfigurator.New("DamagedFirearm", DamagedFirearmGUID)
                 .SetDescription(LocalizationTool.GetString("DamagedFirearm.Description"))
                 .SetDisplayName(LocalizationTool.GetString("DamagedFirearm.Name"))
+                .SetIcon(icon)
+                .Configure()
                 ;
         }
     }

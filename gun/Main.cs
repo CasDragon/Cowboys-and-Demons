@@ -3,6 +3,7 @@ using gun.Classes.Gunslinger;
 using gun.Firearms;
 using HarmonyLib;
 using Kingmaker.Blueprints.JsonSystem;
+using Newtonsoft.Json;
 using System.Reflection;
 using System.Text;
 using UnityModManagerNet;
@@ -60,4 +61,5 @@ public static class Main {
             }
         }
     }
+
 }
