@@ -2,11 +2,19 @@
 using gun.Classes.Gunslinger;
 using gun.Firearms;
 using HarmonyLib;
+using Kingmaker;
 using Kingmaker.Blueprints.JsonSystem;
+using Kingmaker.Blueprints.JsonSystem.Converters;
+using Kingmaker.Modding;
+using Kingmaker.SharedTypes;
+using Kingmaker.Utility;
 using Newtonsoft.Json;
+using Owlcat.Runtime.Core.Utils;
 using System.Reflection;
 using System.Text;
+using UnityEngine;
 using UnityModManagerNet;
+using static UnityModManagerNet.UnityModManager.Param;
 
 namespace gun;
 
@@ -14,9 +22,35 @@ public static class Main {
     internal static Harmony HarmonyInstance;
     internal static UnityModManager.ModEntry.ModLogger Log;
     public static string ModPath;
+    public static readonly HashSet<string> Bundles = new HashSet<string>();
 
+    public static IEnumerable<string> GetFilesFromDirectory(string directory)
+    {
+        return Directory.GetFiles(System.IO.Path.Combine(ModPath, directory), "*", SearchOption.AllDirectories);
+    }
+   /* public static void LoadBundles()
+    {
+        //UnityObjectConverter.ModificationAssetLists.Remove(m_ReferencedAssets);
+        //ObjectExtensions.Or(m_ReferencedAssetsBundle, null)?.Unload(unloadAllLoadedObjects: true);
+        //m_ReferencedAssetsBundle = null;
+        //m_ReferencedAssets = null;
+        Bundles.Clear();
+        foreach (string item in GetFilesFromDirectory("Bundles"))
+        {
+            PFLog.Mods.Log("Bundle found: " + item);
+            string fileName = System.IO.Path.GetFileName(item);
+            Bundles.Add(fileName);
+            if (fileName.EndsWith("BlueprintDirectReferences"))
+            {
+                m_ReferencedAssetsBundle = LoadBundle(fileName);
+                m_ReferencedAssets = ObjectExtensions.Or(m_ReferencedAssetsBundle, null)?.LoadAllAssets<BlueprintReferencedAssets>().Single();
+                UnityObjectConverter.ModificationAssetLists.Add(m_ReferencedAssets);
+            }
+        }
+    }*/
     public static bool Load(UnityModManager.ModEntry modEntry) {
         Log = modEntry.Logger;
+        LogWrapper.EnableInternalVerboseLogs();
         modEntry.OnGUI = OnGUI;
         ModPath = modEntry.Path;
         HarmonyInstance = new Harmony(modEntry.Info.Id);
@@ -50,6 +84,56 @@ public static class Main {
 
                 Log.Log("Patching blueprints.");
                 // Insert your mod's patching methods here
+                OwlcatModificationsManager OwlcatModManager = OwlcatModificationsManager.Instance;
+                if (!OwlcatModManager.m_Started) 
+                {
+                    OwlcatModManager.Start();
+                }
+
+                List<OwlcatModification> list = new List<OwlcatModification>();
+//                list.AddRange(OwlcatModManager.m_Modifications);
+                Log.Log(System.IO.Path.Combine(ModPath, "Bundles\\"));
+                list.AddRange(OwlcatModificationsManager.LoadModifications(System.IO.Path.Combine(ModPath, "Bundles\\")));
+                
+                List<OwlcatModification> m_Modifications = new List<OwlcatModification>();
+
+
+                m_Modifications.AddRange(OwlcatModManager.m_Modifications);
+                m_Modifications.AddRange(list);
+                OwlcatModManager.m_Modifications = m_Modifications.ToArray();
+                string[] enabledModifications = { "GunAssets" };
+                foreach (string modificationName in enabledModifications)
+                {
+
+                    OwlcatModification owlcatModification = OwlcatModManager.m_Modifications.FirstItem((OwlcatModification d) => d.Manifest?.UniqueName == modificationName);
+                    if (owlcatModification == null)
+                    {
+                        PFLog.Mods.Error("Missing modification: " + modificationName);
+                        continue;
+                    }
+                    Log.Log("Found mod");
+                    string path = owlcatModification.Path;
+                    Log.Log("At path:" + path);
+                    OwlcatModificationManifest manifest = owlcatModification.Manifest;
+                    Log.Log("got manifest");
+                    if (manifest == null)
+                    {
+                        PFLog.Mods.Error("Modification can't be loaded: " + modificationName + " (" + path + ")");
+                    }
+                    else 
+                    {
+                        Log.Log("getting ready to apply");
+                        PFLog.Mods.Log("Apply modification: " + manifest.UniqueName + " (" + path + ")");
+                        
+                        owlcatModification.Apply();
+                        Log.Log("applied");
+                        owlcatModification.Reload();
+                        Log.Log("reloading");
+                        //list.Add(owlcatModification);
+                    }
+                }
+                OwlcatModManager.AppliedModifications = list.ToArray();
+
                 BaseFirearm.Configure();
                 Gunslinger.Configure();
                 Musket.Configure();
@@ -59,6 +143,21 @@ public static class Main {
             } catch (Exception e) {
                 Log.Log(string.Concat("Failed to initialize.", e));
             }
+        }
+        public static AssetBundle LoadBundle(string bundleName)
+        {
+            Log.Log(System.IO.Path.Combine(ModPath, "Bundles\\" + bundleName));
+            AssetBundle assetBundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(ModPath, "Bundles\\" + bundleName));
+            if (!assetBundle.isStreamedSceneAssetBundle)
+            {
+                Material[] array = assetBundle.LoadAllAssets<OwlcatModificationMaterialsInBundleAsset>().SingleOrDefault()?.Materials;
+                if (array != null)
+                {
+                    OwlcatModification.PatchMaterialShaders(array);
+                }
+            }
+
+            return assetBundle;
         }
     }
 

@@ -33,8 +33,6 @@ namespace gun.Firearms
         }
     }
 
-    [AllowMultipleComponents]
-    [TypeId("3229cdc69f0b421098fe4755ed528d6d")]
     public class EquipmentRestrictionFirearm : EquipmentRestriction
     {
 

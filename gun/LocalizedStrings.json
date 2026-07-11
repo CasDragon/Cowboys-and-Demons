@@ -356,6 +356,62 @@
     "enGB": "You gain a +2 {g|Encyclopedia:Bonus}bonus{/g} on all {g|Encyclopedia:Damage}damage rolls{/g} you make using muskets."
   },
   {
+    "Key": "Feats.ImprovedCritical.Musket.Description",
+    "enGB": "When using the weapon you selected, your {g|Encyclopedia:Critical}threat range{/g} is doubled."
+  },
+  {
+    "Key": "Feats.ImprovedCritical.Musket.Name",
+    "enGB": "Improved Critical (Musket)"
+  },
+  {
+    "Key": "Feats.WeaponFocus.Mythic.Musket.Description",
+    "enGB": "You're a mythical master of your chosen weapon./nBenefit: Double the {g|Encyclopedia:Bonus}bonuses{/g} on your {g|Encyclopedia:Attack}attack rolls{/g} from Weapon Focus and Greater Weapon Focus."
+  },
+  {
+    "Key": "Feats.WeaponFocus.Mythic.Musket.Name",
+    "enGB": "Weapon Focus Mythic (Musket)"
+  },
+  {
+    "Key": "Feats.WeaponSpecialization.Mythic.Musket.Description",
+    "enGB": "The {g|Encyclopedia:Damage}damage{/g} you deal with your chosen weapon is truly awesome to behold./nBenefit: When using your chosen weapon, you gain a {g|Encyclopedia:Bonus}bonus{/g} equal to half your mythic rank on damage rolls. This stacks with the bonus from Weapon Specialization and Greater Weapon Specialization."
+  },
+  {
+    "Key": "Feats.WeaponSpecialization.Mythic.Musket.Name",
+    "enGB": "Weapon Specialization Mythic (Musket)"
+  },
+  {
+    "Key": "Feats.ImprovedCritical.Mythic.Musket.Description",
+    "enGB": "Your {g|Encyclopedia:Critical}critical{/g} strikes with your chosen weapon are deadlier than most./nBenefit: Your critical multiplier with your chosen weapon is increased by 1."
+  },
+  {
+    "Key": "Feats.ImprovedCritical.Mythic.Musket.Name",
+    "enGB": "Improved Critical Mythic (Musket)"
+  },
+  {
+    "Key": "Feats.ImprovedImprovedCritical.Musket.Description",
+    "enGB": "Choose one type of weapon for which you have the Improved Critical feat. When using the weapon you selected, its {g|Encyclopedia:Critical}critical threat range{/g} is increased by one."
+  },
+  {
+    "Key": "Feats.ImprovedImprovedCritical.Musket.Name",
+    "enGB": "Improved Improved Critical (Musket)"
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCritical.Musket.Description",
+    "enGB": "Choose one type of weapon for which you have the Improved Improved Critical feat. When using the weapon you selected, its {g|Encyclopedia:Critical}critical threat range{/g} is increased by one. Again."
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCritical.Musket.Name",
+    "enGB": "Improved Improved Improved Critical (Musket)"
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCriticalImproved.Musket.Description",
+    "enGB": "Choose one type of weapon for which you have the Improved Improved Improved Critical feat. When using the weapon you selected, its {g|Encyclopedia:Critical}critical{/g} multiplier is increased by one."
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCriticalImproved.Musket.Name",
+    "enGB": "Improved Improved Improved Critical Improved (Musket)"
+  },
+  {
     "Key": "Feats.WeaponFocus.Pistol.Name",
     "enGB": "Weapon Focus (Pistol)"
   },
@@ -386,6 +442,62 @@
   {
     "Key": "Feats.WeaponSpecialization.Greater.Pistol.Description",
     "enGB": "You gain a +2 {g|Encyclopedia:Bonus}bonus{/g} on all {g|Encyclopedia:Damage}damage rolls{/g} you make using pistols."
+  },
+  {
+    "Key": "Feats.ImprovedCritical.Pistol.Description",
+    "enGB": "When using the weapon you selected, your {g|Encyclopedia:Critical}threat range{/g} is doubled."
+  },
+  {
+    "Key": "Feats.ImprovedCritical.Pistol.Name",
+    "enGB": "Improved Critical (Pistol)"
+  },
+  {
+    "Key": "Feats.WeaponFocus.Mythic.Pistol.Description",
+    "enGB": "You're a mythical master of your chosen weapon./nBenefit: Double the {g|Encyclopedia:Bonus}bonuses{/g} on your {g|Encyclopedia:Attack}attack rolls{/g} from Weapon Focus and Greater Weapon Focus."
+  },
+  {
+    "Key": "Feats.WeaponFocus.Mythic.Pistol.Name",
+    "enGB": "Weapon Focus Mythic (Pistol)"
+  },
+  {
+    "Key": "Feats.WeaponSpecialization.Mythic.Pistol.Description",
+    "enGB": "The {g|Encyclopedia:Damage}damage{/g} you deal with your chosen weapon is truly awesome to behold./nBenefit: When using your chosen weapon, you gain a {g|Encyclopedia:Bonus}bonus{/g} equal to half your mythic rank on damage rolls. This stacks with the bonus from Weapon Specialization and Greater Weapon Specialization."
+  },
+  {
+    "Key": "Feats.WeaponSpecialization.Mythic.Pistol.Name",
+    "enGB": "Weapon Specialization Mythic (Pistol)"
+  },
+  {
+    "Key": "Feats.ImprovedCritical.Mythic.Pistol.Description",
+    "enGB": "Your {g|Encyclopedia:Critical}critical{/g} strikes with your chosen weapon are deadlier than most./nBenefit: Your critical multiplier with your chosen weapon is increased by 1."
+  },
+  {
+    "Key": "Feats.ImprovedCritical.Mythic.Pistol.Name",
+    "enGB": "Improved Critical Mythic (Pistol)"
+  },
+  {
+    "Key": "Feats.ImprovedImprovedCritical.Pistol.Description",
+    "enGB": "Choose one type of weapon for which you have the Improved Critical feat. When using the weapon you selected, its {g|Encyclopedia:Critical}critical threat range{/g} is increased by one."
+  },
+  {
+    "Key": "Feats.ImprovedImprovedCritical.Pistol.Name",
+    "enGB": "Improved Improved Critical (Pistol)"
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCritical.Pistol.Description",
+    "enGB": "Choose one type of weapon for which you have the Improved Improved Critical feat. When using the weapon you selected, its {g|Encyclopedia:Critical}critical threat range{/g} is increased by one. Again."
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCritical.Pistol.Name",
+    "enGB": "Improved Improved Improved Critical (Pistol)"
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCriticalImproved.Pistol.Description",
+    "enGB": "Choose one type of weapon for which you have the Improved Improved Improved Critical feat. When using the weapon you selected, its {g|Encyclopedia:Critical}critical{/g} multiplier is increased by one."
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCriticalImproved.Pistol.Name",
+    "enGB": "Improved Improved Improved Critical Improved (Pistol)"
   },
   {
     "Key": "Feats.WeaponFocus.Rifle.Name",
@@ -420,6 +532,62 @@
     "enGB": "You gain a +2 {g|Encyclopedia:Bonus}bonus{/g} on all {g|Encyclopedia:Damage}damage rolls{/g} you make using rifles."
   },
   {
+    "Key": "Feats.ImprovedCritical.Rifle.Description",
+    "enGB": "When using the weapon you selected, your {g|Encyclopedia:Critical}threat range{/g} is doubled."
+  },
+  {
+    "Key": "Feats.ImprovedCritical.Rifle.Name",
+    "enGB": "Improved Critical (Rifle)"
+  },
+  {
+    "Key": "Feats.WeaponFocus.Mythic.Rifle.Description",
+    "enGB": "You're a mythical master of your chosen weapon./nBenefit: Double the {g|Encyclopedia:Bonus}bonuses{/g} on your {g|Encyclopedia:Attack}attack rolls{/g} from Weapon Focus and Greater Weapon Focus."
+  },
+  {
+    "Key": "Feats.WeaponFocus.Mythic.Rifle.Name",
+    "enGB": "Weapon Focus Mythic (Rifle)"
+  },
+  {
+    "Key": "Feats.WeaponSpecialization.Mythic.Rifle.Description",
+    "enGB": "The {g|Encyclopedia:Damage}damage{/g} you deal with your chosen weapon is truly awesome to behold./nBenefit: When using your chosen weapon, you gain a {g|Encyclopedia:Bonus}bonus{/g} equal to half your mythic rank on damage rolls. This stacks with the bonus from Weapon Specialization and Greater Weapon Specialization."
+  },
+  {
+    "Key": "Feats.WeaponSpecialization.Mythic.Rifle.Name",
+    "enGB": "Weapon Specialization Mythic (Rifle)"
+  },
+  {
+    "Key": "Feats.ImprovedCritical.Mythic.Rifle.Description",
+    "enGB": "Your {g|Encyclopedia:Critical}critical{/g} strikes with your chosen weapon are deadlier than most./nBenefit: Your critical multiplier with your chosen weapon is increased by 1."
+  },
+  {
+    "Key": "Feats.ImprovedCritical.Mythic.Rifle.Name",
+    "enGB": "Improved Critical Mythic (Rifle)"
+  },
+  {
+    "Key": "Feats.ImprovedImprovedCritical.Rifle.Description",
+    "enGB": "Choose one type of weapon for which you have the Improved Critical feat. When using the weapon you selected, its {g|Encyclopedia:Critical}critical threat range{/g} is increased by one."
+  },
+  {
+    "Key": "Feats.ImprovedImprovedCritical.Rifle.Name",
+    "enGB": "Improved Improved Critical (Rifle)"
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCritical.Rifle.Description",
+    "enGB": "Choose one type of weapon for which you have the Improved Improved Critical feat. When using the weapon you selected, its {g|Encyclopedia:Critical}critical threat range{/g} is increased by one. Again."
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCritical.Rifle.Name",
+    "enGB": "Improved Improved Improved Critical (Rifle)"
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCriticalImproved.Rifle.Description",
+    "enGB": "Choose one type of weapon for which you have the Improved Improved Improved Critical feat. When using the weapon you selected, its {g|Encyclopedia:Critical}critical{/g} multiplier is increased by one."
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCriticalImproved.Rifle.Name",
+    "enGB": "Improved Improved Improved Critical Improved (Rifle)"
+  },
+  {
     "Key": "Feats.WeaponFocus.Revolver.Name",
     "enGB": "Weapon Focus (Revolver)"
   },
@@ -450,5 +618,73 @@
   {
     "Key": "Feats.WeaponSpecialization.Greater.Revolver.Description",
     "enGB": "You gain a +2 {g|Encyclopedia:Bonus}bonus{/g} on all {g|Encyclopedia:Damage}damage rolls{/g} you make using revolvers."
+  },
+  {
+    "Key": "Feats.ImprovedCritical.Revolver.Description",
+    "enGB": "When using the weapon you selected, your {g|Encyclopedia:Critical}threat range{/g} is doubled."
+  },
+  {
+    "Key": "Feats.ImprovedCritical.Revolver.Name",
+    "enGB": "Improved Critical (Revolver)"
+  },
+  {
+    "Key": "Feats.WeaponFocus.Mythic.Revolver.Description",
+    "enGB": "You're a mythical master of your chosen weapon./nBenefit: Double the {g|Encyclopedia:Bonus}bonuses{/g} on your {g|Encyclopedia:Attack}attack rolls{/g} from Weapon Focus and Greater Weapon Focus."
+  },
+  {
+    "Key": "Feats.WeaponFocus.Mythic.Revolver.Name",
+    "enGB": "Weapon Focus Mythic (Revolver)"
+  },
+  {
+    "Key": "Feats.WeaponSpecialization.Mythic.Revolver.Description",
+    "enGB": "The {g|Encyclopedia:Damage}damage{/g} you deal with your chosen weapon is truly awesome to behold./nBenefit: When using your chosen weapon, you gain a {g|Encyclopedia:Bonus}bonus{/g} equal to half your mythic rank on damage rolls. This stacks with the bonus from Weapon Specialization and Greater Weapon Specialization."
+  },
+  {
+    "Key": "Feats.WeaponSpecialization.Mythic.Revolver.Name",
+    "enGB": "Weapon Specialization Mythic (Revolver)"
+  },
+  {
+    "Key": "Feats.ImprovedCritical.Mythic.Revolver.Description",
+    "enGB": "Your {g|Encyclopedia:Critical}critical{/g} strikes with your chosen weapon are deadlier than most./nBenefit: Your critical multiplier with your chosen weapon is increased by 1."
+  },
+  {
+    "Key": "Feats.ImprovedCritical.Mythic.Revolver.Name",
+    "enGB": "Improved Critical Mythic (Revolver)"
+  },
+  {
+    "Key": "Feats.ImprovedImprovedCritical.Revolver.Description",
+    "enGB": "Choose one type of weapon for which you have the Improved Critical feat. When using the weapon you selected, its {g|Encyclopedia:Critical}critical threat range{/g} is increased by one."
+  },
+  {
+    "Key": "Feats.ImprovedImprovedCritical.Revolver.Name",
+    "enGB": "Improved Improved Critical (Revolver)"
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCritical.Revolver.Description",
+    "enGB": "Choose one type of weapon for which you have the Improved Improved Critical feat. When using the weapon you selected, its {g|Encyclopedia:Critical}critical threat range{/g} is increased by one. Again."
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCritical.Revolver.Name",
+    "enGB": "Improved Improved Improved Critical (Revolver)"
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCriticalImproved.Revolver.Description",
+    "enGB": "Choose one type of weapon for which you have the Improved Improved Improved Critical feat. When using the weapon you selected, its {g|Encyclopedia:Critical}critical{/g} multiplier is increased by one."
+  },
+  {
+    "Key": "Feats.ImprovedImprovedImprovedCriticalImproved.Revolver.Name",
+    "enGB": "Improved Improved Improved Critical Improved (Revolver)"
+  },
+  {
+    "Key": "Finnean",
+    "enGB": "Finnean the Talking Weapon"
+  },
+  {
+    "Key": "Finnean.Lich",
+    "enGB": "Finnean"
+  },
+  {
+    "Key": "Finnean.Lich.Flavor",
+    "enGB": "This weapon was once the seat of Finnean's soul. Now that the soul of the Sarkorian Pathfinder has left the weapon, it has fallen silent forever."
   }
 ]

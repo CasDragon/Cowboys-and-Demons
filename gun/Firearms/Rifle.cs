@@ -31,7 +31,20 @@ namespace gun.Firearms
             "2c00239bd7244e1fb59cf2319a9cd4a2",//focus
             "2de7f4b42c9e449c98de3f7ce20ca41c",//greater focus
             "2a34e2828f4b4bed932db7edf8eab49f",//specialisation
-            "3ee46d18b3bd48e68bb6e2b5fda82ed8"//greater spec
+            "3ee46d18b3bd48e68bb6e2b5fda82ed8",//greater spec
+            "b6a4a9b2955f43f3815ada07ccd9f1a4",//crit spec
+            "0f0ee1f3be1d4a2b862d44f8b4532324",
+            "58f213b662654928b12994deb0093ae3",
+            "171482bdaae4473690d958682b94d04b",
+            "056afb0168624d3ba1163b126f053646",
+            "fb6db035bb2442f1b21bc4bd90cf5c89",
+            "329aa9cb1290409b99a591f452c77b76"
+        };
+        public static string[] FinneanIDs =
+        {
+            "44b3d61483004bb6b5e1bab068fa2a66",
+            "ecb6498df73849c5aba4dc8655229822",
+            "45ba07cf19024661b33a18f60be31a13"
         };
         public static void Configure()
         {
@@ -58,8 +71,12 @@ namespace gun.Firearms
             //put all relevant versions into the shops
             AddWeapontoShop(BasicItemIDs, 3);//put the basic +1,+2 etc. in the chapter 3 exotic weapons vendor
             AddWeapontoShop(BasicItemIDs, 5);//and again in the chapter 5 exotic weapons vendor
+            AddWeapontoShop(BasicItemIDs, 6);//and in the roguelike
 
-            AddWeaponFocus("Rifle", WeaponID, FocusIDs);
+            //add to finnean polymorph
+            AddWeapontoFinnean("Rifle", FinneanIDs, WeaponID);//does not allow stage 0 finnean
+
+            AddWeaponFeats("Rifle", WeaponID, FocusIDs);
 
         }
     }

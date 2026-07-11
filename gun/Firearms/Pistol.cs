@@ -30,7 +30,21 @@ namespace gun.Firearms
             "bff81a636c864f848eef502b6f5f07ad",//weapon focus
             "4b6d0760901645fb839db2c25f010dab",//weapon focus greater
             "789033f251e04a3484c35e86dc7f0eca",//weapon specialisation
-            "c5b49993d16d4d4e9529e98ee684aeaa"//weapon specialisation greater
+            "c5b49993d16d4d4e9529e98ee684aeaa",//weapon specialisation greater
+            "6309ae3a71b142138e25123c159b1f8c",//imrpovedcrit 
+            "a7d02c0a8c374510aefcd72fa356c06c",//weapon focus mythic
+            "f05cb7eaefc048a9ac89d38240e9a030",//weapon specialisation mythic
+            "8eafafcef07e47948d4cf4f096237892",//imroved critical mythic
+            "95842d9bce4747ad82469b0e5fa93b16",//improved improved crit 
+            "8269e4128fab4e7488e0160bbee52597",//improved improved improved crit 
+            "bdeb627f6f9a4d9682fadd37825f6bf0"//improved improved improved crit improved
+        };
+        public static string[] FinneanIDs =
+        {
+            "d4436f16a42f49f09d1545634ad1a6ca",
+            "b7fe4a77cec6421483c70fc3c79e5bf4",
+            "b910e55bc8f94c92b9afc3fc860d5f72",
+            "019079a6e77f4a8d8303e0dd51b90e46"
         };
         public static void Configure()
         {
@@ -56,10 +70,16 @@ namespace gun.Firearms
 
             //setup any special enchanted variants we want to be in game
             //put all relevant versions into the shops
+            AddWeapontoShop(new string[] { BasicItemIDs[0] }, 1);//put the unchanted version in the chapter 1 vendor
+            AddWeapontoShop(new string[] { BasicItemIDs[0], BasicItemIDs[1], BasicItemIDs[2] }, 2);//put the basic +1,+2 in the chapter 2 exotic weapons vendor
             AddWeapontoShop(BasicItemIDs, 3);//put the basic +1,+2 etc. in the chapter 3 exotic weapons vendor
             AddWeapontoShop(BasicItemIDs, 5);//and again in the chapter 5 exotic weapons vendor
+            AddWeapontoShop(BasicItemIDs, 6);//and in the roguelike
 
-            AddWeaponFocus("Pistol", WeaponID, FocusIDs);
+            //add to finnean polymorph
+            AddWeapontoFinnean("Pistol", FinneanIDs, WeaponID, true);
+
+            AddWeaponFeats("Pistol", WeaponID, FocusIDs);
 
         }
     }

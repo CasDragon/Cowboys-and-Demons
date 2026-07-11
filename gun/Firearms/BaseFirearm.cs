@@ -1,22 +1,28 @@
 ﻿using BlueprintCore.Blueprints.Configurators;
+using BlueprintCore.Blueprints.Configurators.Items;
 using BlueprintCore.Blueprints.Configurators.Items.Ecnchantments;
 using BlueprintCore.Blueprints.Configurators.Items.Weapons;
 using BlueprintCore.Blueprints.Configurators.UnitLogic.ActivatableAbilities;
 using BlueprintCore.Blueprints.CustomConfigurators;
+using BlueprintCore.Blueprints.CustomConfigurators.Classes;
 using BlueprintCore.Blueprints.CustomConfigurators.UnitLogic.Abilities;
 using BlueprintCore.Blueprints.CustomConfigurators.UnitLogic.Buffs;
 using BlueprintCore.Utils;
 using HarmonyLib;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes.Selection;
+using Kingmaker.Blueprints.Items;
+using Kingmaker.Blueprints.Items.Components;
 using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.JsonSystem;
 using Kingmaker.Blueprints.JsonSystem.EditorDatabase;
+using Kingmaker.Blueprints.Loot;
 using Kingmaker.Designers.EventConditionActionSystem.Actions;
 using Kingmaker.Designers.EventConditionActionSystem.Conditions;
 using Kingmaker.Designers.Mechanics.Buffs;
-using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.Designers.Mechanics.EquipmentEnchants;
+using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.Enums;
 using Kingmaker.Enums.Damage;
 using Kingmaker.ResourceLinks;
@@ -24,7 +30,9 @@ using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
+using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.Utility;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -32,12 +40,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using BlueprintCore.Blueprints.CustomConfigurators.Classes;
-using BlueprintCore.Blueprints.Configurators.Items;
-using Kingmaker.Blueprints.Items;
-using Kingmaker.Blueprints.Loot;
-using Kingmaker.UnitLogic.FactLogic;
-using Kingmaker.Blueprints.Classes.Selection;
+using static Kingmaker.EntitySystem.Properties.BaseGetter.ListPropertyGetter;
 
 
 namespace gun.Firearms
@@ -62,12 +65,16 @@ namespace gun.Firearms
         const string ClipOneHandGUID = "50a4c21bb11e43c7ba23891a7cdf66c5";
         const string ClipTwoHandGUID = "f49df5707fa04eb6ae435723bab1cbb4";
         public const string AdvancedClipGUID = "78f6979ff32e425291709489c652a90b";
-        public static string[] Vendors = { "5f17d3b47752fb94abe8c98534af8920", "7aaf7d11ce8541b69b3ce0064dd45d2a", "9c597a1f92dde2f4f8adb27ee5730188", "", "73895d43f46b45079e19d1afcb96efdd" };
+        public static string[] Vendors = { "5f17d3b47752fb94abe8c98534af8920", "7aaf7d11ce8541b69b3ce0064dd45d2a", "9c597a1f92dde2f4f8adb27ee5730188", "", "73895d43f46b45079e19d1afcb96efdd", "195579adaa20483ca3aad66bb2b06f8f" };//one on the end is for Roguelike DLC
+        public const string FinneanItem = "95c126deb99ba054aa5b84710520c035";
+        public const string BulletGUID = "608d2e99ebf14967a023672b0764aa5c";
+
         public static void Configure()
         {
             FirearmProficiency.Configure();//create the firearm proficiency feat
 
-
+            MakeProjectile();//create the bullet
+            //WeaponCategoryExtension.Data[59].SubCategories.Remove((WeaponSubCategory cat) => cat == WeaponSubCategory.Disabled);
             //may need to alter the order depending on how each bit interacts with the others
             //define Armour Piercing enhancement
             ArmorPiercingEnhancement();
@@ -88,7 +95,16 @@ namespace gun.Firearms
             //define misfire
             MisfireEnhancement.Configure();
             //define scatter
+            
         }
+
+        public static void MakeProjectile()
+        {
+            ProjectileConfigurator.New("Bullet", BulletGUID).CopyFrom(BlueprintTool.GetRef<BlueprintProjectileReference>(ProjectileRef))
+               .SetSpeed(46)
+               .Configure();
+        }
+
         //creates the capacity "enhancement" on a weapon alongside the associated resource and ability
         private static void SetupClip()
         {
@@ -259,21 +275,18 @@ namespace gun.Firearms
             model.AssetId = ModelID;
             WeaponVisualParameters visuals = Utilities.Clone(BlueprintTool.Get<BlueprintWeaponType>("36d0551b8a28587438a47fcbbf53c083").m_VisualParameters);//use the heavy crossbow visuals as a base
             visuals.m_WeaponAnimationStyle = Kingmaker.View.Animation.WeaponAnimationStyle.Crossbow;
-            //visuals.m_Projectiles = new BlueprintProjectileReference[1] { BlueprintTool.GetRef<BlueprintProjectileReference>(ProjectileRef) };
-            //visuals.m_Projectiles = new BlueprintProjectileReference[0] { };
             visuals.m_SpecialAnimation = Kingmaker.Visual.Animation.Kingmaker.UnitAnimationSpecialAttackType.None;
             visuals.m_WeaponModel = model;//not sure this is right but will run with it for now
             visuals.m_OverrideAttachSlots = false;
             visuals.m_ReachFXThresholdBonus = 0;
             visuals.m_SoundSize = Kingmaker.Visual.Sound.WeaponSoundSizeType.Medium;//not sure what this is for
             visuals.m_SoundType = Kingmaker.Visual.Sound.WeaponSoundType.PierceMetal;//not sure what this does yet either will need to give some through
-            //visuals.m_WhooshSound = "CrossbowShot"; //Not sure what this is or how to set it
             visuals.m_MissSoundType = Kingmaker.Visual.Sound.WeaponMissSoundType.MediumMetal;//not sure if this is the right one but will go with it for now
-            //visuals.m_EquipSound = Weapon_Bow_Equip; don't know how to set these
-            //visuals.m_UnequipSound = Weapon_Bow_Remove;
-            //visuals.m_InventoryUnequipSound = BowEquip;
-            //visuals.m_InventoryPutSound = CrossbowPut;
-            //visuals.m_InventoryTakeSound = CrossbowTake;
+
+
+            //Hopefully this will add a new projectile that travels twice as fast as the crossbow bolt and thus remove the fireing again before it hits bug
+           
+            visuals.m_Projectiles = new BlueprintProjectileReference[1] { BlueprintTool.GetRef<BlueprintProjectileReference>(BulletGUID) };
             if (visuals.Projectiles.Length != 0)
             {
                 Main.Log.Log("has projectiles");
@@ -337,7 +350,7 @@ namespace gun.Firearms
             weapon.Configure();
         }
 
-        public static void AddWeaponFocus(string name, string WeaponID, string[] FocusIDs)
+        public static void AddWeaponFeats(string name, string WeaponID, string[] FocusIDs)
         {
             //Weapon Focus
            Sprite Icon = BlueprintTool.Get<BlueprintParametrizedFeature>("1e1f627d26ad36f43bbd26cc2bf8ac7e").Icon;//weapon focus icon
@@ -347,8 +360,11 @@ namespace gun.Firearms
                 .SetDescription(LocalizationTool.GetString("Feats.WeaponFocus." + name + ".Description"))
                 .SetIcon(Icon)
                 .AddToIsPrerequisiteFor(BlueprintTool.GetRef<BlueprintFeatureReference>(FocusIDs[1]))
+                .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.Feat)
+                .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.CombatFeat)
                 .Configure()
                 ; 
+            
             //Greater Weapon Focus
             Icon = BlueprintTool.Get<BlueprintParametrizedFeature>("09c9e82965fb4334b984a1e9df3bd088").Icon;//greater weapon focus icon
             FeatureConfigurator.New("WeaponFocusGreater" + name, FocusIDs[1])
@@ -356,6 +372,8 @@ namespace gun.Firearms
                 .SetDisplayName(LocalizationTool.GetString("Feats.WeaponFocus.Greater." + name + ".Name"))
                 .SetDescription(LocalizationTool.GetString("Feats.WeaponFocus.Greater." + name + ".Description"))
                 .SetIcon(Icon)
+                .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.Feat)
+                .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.CombatFeat)
                 .AddPrerequisiteFeature(BlueprintTool.GetRef<BlueprintFeatureReference>(FocusIDs[0]))
                 .AddPrerequisiteClassLevel(BlueprintTool.GetRef<BlueprintCharacterClassReference>("48ac8db94d5de7645906c7d0ad3bcfbd"),8,group:Kingmaker.Blueprints.Classes.Prerequisites.Prerequisite.GroupType.All)
                 .Configure()
@@ -367,6 +385,8 @@ namespace gun.Firearms
                 .SetDisplayName(LocalizationTool.GetString("Feats.WeaponSpecialization." + name + ".Name"))
                 .SetDescription(LocalizationTool.GetString("Feats.WeaponSpecialization." + name + ".Description"))
                 .SetIcon(Icon)
+                .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.Feat)
+                .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.CombatFeat)
                 .AddToIsPrerequisiteFor(BlueprintTool.GetRef<BlueprintFeatureReference>(FocusIDs[3]))
                 .AddPrerequisiteClassLevel(BlueprintTool.GetRef<BlueprintCharacterClassReference>("48ac8db94d5de7645906c7d0ad3bcfbd"), 4, group: Kingmaker.Blueprints.Classes.Prerequisites.Prerequisite.GroupType.All)
                 .Configure()
@@ -378,11 +398,95 @@ namespace gun.Firearms
                 .SetDisplayName(LocalizationTool.GetString("Feats.WeaponSpecialization.Greater." + name + ".Name"))
                 .SetDescription(LocalizationTool.GetString("Feats.WeaponSpecialization.Greater." + name + ".Description"))
                 .SetIcon(Icon)
+                .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.Feat)
+                .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.CombatFeat)
                 .AddPrerequisiteFeature(BlueprintTool.GetRef<BlueprintFeatureReference>(FocusIDs[2]))
                 .AddPrerequisiteClassLevel(BlueprintTool.GetRef<BlueprintCharacterClassReference>("48ac8db94d5de7645906c7d0ad3bcfbd"), 12, group: Kingmaker.Blueprints.Classes.Prerequisites.Prerequisite.GroupType.All)
                 .Configure()
                 ;
 
+            Icon = BlueprintTool.Get<BlueprintParametrizedFeature>("f4201c85a991369408740c6888362e20").Icon;//improved critical icon
+            FeatureConfigurator.New("ImprovedCritical" + name, FocusIDs[4])
+                .AddWeaponTypeCriticalEdgeIncrease(WeaponID)
+                .SetDisplayName(LocalizationTool.GetString("Feats.ImprovedCritical." + name + ".Name"))
+                .SetDescription(LocalizationTool.GetString("Feats.ImprovedCritical." + name + ".Description"))
+                .SetIcon(Icon)
+                .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.Feat)
+                .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.CombatFeat)
+                .AddPrerequisiteStatValue(Kingmaker.EntitySystem.Stats.StatType.BaseAttackBonus, 8)
+                .Configure()
+                ;
+
+            Icon = BlueprintTool.Get<BlueprintParametrizedFeature>("74eb201774bccb9428ba5ac8440bf990").Icon;//weapon focus mythic icon
+            FeatureConfigurator.New("WeaponFocusMythic" + name, FocusIDs[5])
+                 .AddComponent(new WeaponFocusMythic(BlueprintTool.GetRef<BlueprintWeaponTypeReference>(WeaponID), BlueprintTool.GetRef < BlueprintFeatureReference> (FocusIDs[1])))
+                 .SetDisplayName(LocalizationTool.GetString("Feats.WeaponFocus.Mythic." + name + ".Name"))
+                 .SetDescription(LocalizationTool.GetString("Feats.WeaponFocus.Mythic." + name + ".Description"))
+                 .SetIcon(Icon)
+                 .AddPrerequisiteFeature(BlueprintTool.GetRef<BlueprintFeatureReference>(FocusIDs[0]))//requires normal wepon focus
+                 .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.MythicFeat)
+                 .Configure()
+                 ;
+
+            Icon = BlueprintTool.Get<BlueprintParametrizedFeature>("d84ac5b1931bc504a98bfefaa419e34f").Icon;//weapon spec mythic icon
+            FeatureConfigurator.New("WeaponSpecializationMythic" + name, FocusIDs[6])
+                 .AddComponent(new WeaponTypeDamageBonusMythic(BlueprintTool.GetRef<BlueprintWeaponTypeReference>(WeaponID)))
+                 .SetDisplayName(LocalizationTool.GetString("Feats.WeaponSpecialization.Mythic." + name + ".Name"))
+                 .SetDescription(LocalizationTool.GetString("Feats.WeaponSpecialization.Mythic." + name + ".Description"))
+                 .SetIcon(Icon)
+                 .AddPrerequisiteFeature(BlueprintTool.GetRef<BlueprintFeatureReference>(FocusIDs[2]))//requires normal wepon spec
+                 .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.MythicFeat)
+                 .Configure()
+                 ;
+            Icon = BlueprintTool.Get<BlueprintParametrizedFeature>("8bc0190a4ec04bd489eec290aeaa6d07").Icon;//improved crit mythic icon
+            FeatureConfigurator.New("ImprovedCriticalMythic" + name, FocusIDs[7])
+                 .AddComponent(new ImprovedCriticalMythic(BlueprintTool.GetRef<BlueprintWeaponTypeReference>(WeaponID)))
+                 .SetDisplayName(LocalizationTool.GetString("Feats.ImprovedCritical.Mythic." + name + ".Name"))
+                 .SetDescription(LocalizationTool.GetString("Feats.ImprovedCritical.Mythic." + name + ".Description"))
+                 .SetIcon(Icon)
+                 .AddPrerequisiteFeature(BlueprintTool.GetRef<BlueprintFeatureReference>(FocusIDs[4]))//requires normal improved critical 
+                 .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.MythicFeat)
+                 .Configure()
+                 ;
+            Icon = BlueprintTool.Get<BlueprintParametrizedFeature>("56f94badbba018b4b8277ce6e2e79e72").Icon;//improved improved crit icon
+            FeatureConfigurator.New("ImprovedImprovedCritical" + name, FocusIDs[8])
+                 .AddComponent(new ImprovedImprovedCritical(BlueprintTool.GetRef<BlueprintWeaponTypeReference>(WeaponID)))
+                 .AddPrerequisitePlayerHasFeature(BlueprintTool.GetRef<BlueprintFeatureReference>("e9298851786c5334dba1398e9635a83d"))
+                 .SetDisplayName(LocalizationTool.GetString("Feats.ImprovedImprovedCritical." + name + ".Name"))
+                 .SetDescription(LocalizationTool.GetString("Feats.ImprovedImprovedCritical." + name + ".Description"))
+                 .SetIcon(Icon)
+                 .AddPrerequisiteFeature(BlueprintTool.GetRef<BlueprintFeatureReference>(FocusIDs[4]))//requires normal improved critical 
+                 .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.TricksterFeat)
+                 .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.CombatFeat)
+                 .Configure()
+                 ;
+            
+            Icon = BlueprintTool.Get<BlueprintParametrizedFeature>("006a966007802a0478c9e21007207aac").Icon;//improved improved improved crit icon
+            FeatureConfigurator.New("ImprovedImprovedImprovedCritical" + name, FocusIDs[9])
+                 .AddPrerequisiteStatValue(Kingmaker.EntitySystem.Stats.StatType.BaseAttackBonus,8)
+                 .AddPrerequisiteFeature(BlueprintTool.GetRef<BlueprintFeatureReference>(FocusIDs[8]))//requires improved improved crit
+                 .AddComponent(new ImprovedImprovedCritical(BlueprintTool.GetRef<BlueprintWeaponTypeReference>(WeaponID)))
+                 .AddPrerequisitePlayerHasFeature(BlueprintTool.GetRef<BlueprintFeatureReference>("e9298851786c5334dba1398e9635a83d"))
+                 .SetDisplayName(LocalizationTool.GetString("Feats.ImprovedImprovedImprovedCritical." + name + ".Name"))
+                 .SetDescription(LocalizationTool.GetString("Feats.ImprovedImprovedImprovedCritical." + name + ".Description"))
+                 .SetIcon(Icon)
+                 .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.TricksterFeat)
+                 .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.CombatFeat)
+                 .Configure()
+                 ;
+            Icon = BlueprintTool.Get<BlueprintParametrizedFeature>("319c882ab3cc51544ad2f3f43633d5b1").Icon;//improved improved improved crit icon
+            FeatureConfigurator.New("ImprovedImprovedImprovedCriticalImproved" + name, FocusIDs[10])
+                 .AddPrerequisiteStatValue(Kingmaker.EntitySystem.Stats.StatType.BaseAttackBonus, 8)
+                 .AddPrerequisiteFeature(BlueprintTool.GetRef<BlueprintFeatureReference>(FocusIDs[9]))//requires improved improved crit
+                 .AddComponent(new ImprovedCriticalMythic(BlueprintTool.GetRef<BlueprintWeaponTypeReference>(WeaponID)))
+                 .AddPrerequisitePlayerHasFeature(BlueprintTool.GetRef<BlueprintFeatureReference>("e9298851786c5334dba1398e9635a83d"))
+                 .SetDisplayName(LocalizationTool.GetString("Feats.ImprovedImprovedImprovedCriticalImproved." + name + ".Name"))
+                 .SetDescription(LocalizationTool.GetString("Feats.ImprovedImprovedImprovedCriticalImproved." + name + ".Description"))
+                 .SetIcon(Icon)
+                 .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.TricksterFeat)
+                 .AddToGroups(Kingmaker.Blueprints.Classes.FeatureGroup.CombatFeat)
+                 .Configure()
+                 ;
         }
 
         //makes the standard +1,+2,+3,+4,+5 weapons
@@ -435,7 +539,61 @@ namespace gun.Firearms
                     .Configure();
             }
         }
+        public static void AddWeapontoFinnean (string name, string[] IDs, string TypeID, bool HasLevel0 = false)
+        {
+            BlueprintHiddenItem Finnean = BlueprintTool.Get<BlueprintHiddenItem>("95c126deb99ba054aa5b84710520c035");
+            int i = 0;
+            if (HasLevel0) {
+                CreateWeaponItem("Finnean" + name + "Stage1", IDs[i], TypeID)
+                    .SetDisplayNameText(LocalizationTool.GetString("Finnean"))
+                    //+1 cold iron ghost touch
+                    .AddToEnchantments(BlueprintTool.GetRef<BlueprintWeaponEnchantmentReference>("d42fc23b92c640846ac137dc26e000d4"), BlueprintTool.GetRef<BlueprintWeaponEnchantmentReference>("e5990dc76d2a613409916071c898eee8"), BlueprintTool.GetRef<BlueprintWeaponEnchantmentReference>("47857e1a5a3ec1a46adf6491b1423b4f"))
+                    .Configure();
+                AddToPolymorphList(Finnean, "e50ce85131b64acbb14dc1cade2434d0", IDs[i],1);///Add to the stage 1 finnean list
+                i++;
+            }
+            
+            CreateWeaponItem("Finnean" + name + "Stage2", IDs[i], TypeID)
+                .SetDisplayNameText(LocalizationTool.GetString("Finnean"))
+                //+3 Ghost Touch Heartseeker (Finean Chapter 3 Enhancement)
+                .AddToEnchantments(BlueprintTool.GetRef<BlueprintWeaponEnchantmentReference>("80bb8a737579e35498177e1e3c75899b"), BlueprintTool.GetRef<BlueprintWeaponEnchantmentReference>("47857e1a5a3ec1a46adf6491b1423b4f"), BlueprintTool.GetRef<BlueprintWeaponEnchantmentReference>("e252b26686ab66241afdf33f2adaead6"), BlueprintTool.GetRef<BlueprintWeaponEnchantmentReference>("b183bd491793d194c9e4c96cd11769b1"))
+                .Configure();
+            AddToPolymorphList(Finnean, "10f9d67c98bf4796831ea5aa99e580b3", IDs[i],2);///Add to the stage 2 finnean list
+            i++;
 
+            CreateWeaponItem("Finnean" + name + "Stage3Base", IDs[i], TypeID)
+                .SetDisplayNameText(LocalizationTool.GetString("Finnean"))
+                 //+5 Ghost Touch Heartseeker (Finean Chapter 5 Enhancement)  (Keeping the ghost touch rather than brilliant energy since that would actually be a debuff on a firearm))
+                .AddToEnchantments(BlueprintTool.GetRef<BlueprintWeaponEnchantmentReference>("bdba267e951851449af552aa9f9e3992"), BlueprintTool.GetRef<BlueprintWeaponEnchantmentReference>("47857e1a5a3ec1a46adf6491b1423b4f"), BlueprintTool.GetRef<BlueprintWeaponEnchantmentReference>("e252b26686ab66241afdf33f2adaead6"), BlueprintTool.GetRef<BlueprintWeaponEnchantmentReference>("6b66e949f348ccd4989a5fd9254f8958"))
+                .Configure();
+            AddToPolymorphList(Finnean, "dce45f9c5e23496284a6b32a5b3f8a7f", IDs[i],3);///Add to the stage 3 finnean list
+            i++;
+
+            CreateWeaponItem("Finnean" + name + "Stage3Lich", IDs[i], TypeID)
+                .SetDisplayNameText(LocalizationTool.GetString("Finnean.Lich"))
+                .SetFlavorText(LocalizationTool.GetString("Finnean.Lich.Flavor"))
+                //+5 Ghost Touch (Finean Chapter 5 Lich Enhancement)  (Keeping the ghost touch rather than brilliant energy since that would actually be a debuff on a firearm))
+                .AddToEnchantments(BlueprintTool.GetRef<BlueprintWeaponEnchantmentReference>("bdba267e951851449af552aa9f9e3992"), BlueprintTool.GetRef<BlueprintWeaponEnchantmentReference>("47857e1a5a3ec1a46adf6491b1423b4f"), BlueprintTool.GetRef<BlueprintWeaponEnchantmentReference>("9aa9af4b654662945a410644d3db8d99"))
+                .Configure();
+            AddToPolymorphList(Finnean, "58dd746a84c54571998753d065684723", IDs[i],4);///Add to the stage 3 lich finnean list
+        }
+
+        static void AddToPolymorphList(BlueprintHiddenItem Finnean, string FlagToCheck, string ID, int level)
+        {
+            HiddenItemConfigurator FineanConfig = HiddenItemConfigurator.For(Finnean.ToReference<BlueprintReference<BlueprintHiddenItem>>());
+            FineanConfig.EditComponents<ItemPolymorph>((ItemPolymorph p) => {
+                BlueprintItemReference weapon = BlueprintTool.GetRef<BlueprintItemReference>(ID);
+                p.m_PolymorphItems.Add(weapon);
+                Main.Log.Log("Added" + weapon.Guid + "to Polymorph List");
+            }, (ItemPolymorph p) => {
+                return p.m_FlagToCheck == ((ItemPolymorph)Finnean.Components[level]).m_FlagToCheck; 
+            });
+            FineanConfig.Configure();
+            //((ItemPolymorph)Finnean.Components[level]).m_PolymorphItems.AddItem(BlueprintTool.GetRef<BlueprintItemReference>(ID));
+            
+            Main.Log.Log("Last Item in list:" + ((ItemPolymorph)Finnean.Components[level]).m_PolymorphItems.Last().Guid);
+            
+        }
         //most firearms do unaligned physical blugeoining and piercing damage
         public static DamageTypeDescription DefaultFirearmDamageType()
         {
