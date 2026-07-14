@@ -18,7 +18,7 @@ namespace gun.Firearms
 {
     internal static class Rifle
     {
-        const string WeaponID = "96b4d5e194e74bf3bc2b7dbf16bbffb4";
+        public const string WeaponID = "96b4d5e194e74bf3bc2b7dbf16bbffb4";
         public static string[] BasicItemIDs = {
             "7c6a55c6da594dcfba98973336c65083",//standard
             "09bf4f8e9e1d40ca936812eb85956f37",//plus1
@@ -61,11 +61,12 @@ namespace gun.Firearms
             texture2D.LoadImage(data);
             Sprite icon = Sprite.Create(texture2D, new Rect(0f, 0f, 64, 64), new Vector2(0f, 0f));
 
-            //creates the musket weapon type by calling from base firearm
+            //creates the rifle weapon type by calling from base firearm
             CreateWeapon("Rifle", WeaponID, false, Kingmaker.Utility.FeetExtension.Feet(80), Dice, DamageCriticalModifierType.X4, 20, DefaultFirearmDamageType(), icon, 9, visuals, MisfireEnhancement.Misfire1_A,true);
+            
 
-            //create a basic Musket and all the normal variants
-            CreateBasicWeapons("Rifle", BasicItemIDs, WeaponID, 5000);
+                //create a basic rifle and all the normal variants
+                CreateBasicWeapons("Rifle", BasicItemIDs, WeaponID, 5000);
 
             //setup any special enchanted variants we want to be in game
             //put all relevant versions into the shops

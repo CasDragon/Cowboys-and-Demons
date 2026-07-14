@@ -3,6 +3,7 @@ using gun.Classes.Gunslinger;
 using gun.Firearms;
 using HarmonyLib;
 using Kingmaker;
+using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.JsonSystem;
 using Kingmaker.Blueprints.JsonSystem.Converters;
 using Kingmaker.Modding;
@@ -28,26 +29,6 @@ public static class Main {
     {
         return Directory.GetFiles(System.IO.Path.Combine(ModPath, directory), "*", SearchOption.AllDirectories);
     }
-   /* public static void LoadBundles()
-    {
-        //UnityObjectConverter.ModificationAssetLists.Remove(m_ReferencedAssets);
-        //ObjectExtensions.Or(m_ReferencedAssetsBundle, null)?.Unload(unloadAllLoadedObjects: true);
-        //m_ReferencedAssetsBundle = null;
-        //m_ReferencedAssets = null;
-        Bundles.Clear();
-        foreach (string item in GetFilesFromDirectory("Bundles"))
-        {
-            PFLog.Mods.Log("Bundle found: " + item);
-            string fileName = System.IO.Path.GetFileName(item);
-            Bundles.Add(fileName);
-            if (fileName.EndsWith("BlueprintDirectReferences"))
-            {
-                m_ReferencedAssetsBundle = LoadBundle(fileName);
-                m_ReferencedAssets = ObjectExtensions.Or(m_ReferencedAssetsBundle, null)?.LoadAllAssets<BlueprintReferencedAssets>().Single();
-                UnityObjectConverter.ModificationAssetLists.Add(m_ReferencedAssets);
-            }
-        }
-    }*/
     public static bool Load(UnityModManager.ModEntry modEntry) {
         Log = modEntry.Logger;
         LogWrapper.EnableInternalVerboseLogs();
@@ -140,24 +121,10 @@ public static class Main {
                 Pistol.Configure();
                 Rifle.Configure();
                 Revolver.Configure();
+
             } catch (Exception e) {
                 Log.Log(string.Concat("Failed to initialize.", e));
             }
-        }
-        public static AssetBundle LoadBundle(string bundleName)
-        {
-            Log.Log(System.IO.Path.Combine(ModPath, "Bundles\\" + bundleName));
-            AssetBundle assetBundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(ModPath, "Bundles\\" + bundleName));
-            if (!assetBundle.isStreamedSceneAssetBundle)
-            {
-                Material[] array = assetBundle.LoadAllAssets<OwlcatModificationMaterialsInBundleAsset>().SingleOrDefault()?.Materials;
-                if (array != null)
-                {
-                    OwlcatModification.PatchMaterialShaders(array);
-                }
-            }
-
-            return assetBundle;
         }
     }
 

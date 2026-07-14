@@ -8,6 +8,7 @@ using BlueprintCore.Blueprints.CustomConfigurators.Classes;
 using BlueprintCore.Blueprints.CustomConfigurators.UnitLogic.Abilities;
 using BlueprintCore.Blueprints.CustomConfigurators.UnitLogic.Buffs;
 using BlueprintCore.Utils;
+using BlueprintCore.Utils.Assets;
 using HarmonyLib;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes.Selection;
@@ -26,6 +27,7 @@ using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.Enums;
 using Kingmaker.Enums.Damage;
 using Kingmaker.ResourceLinks;
+using Kingmaker.ResourceManagement;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic.Abilities.Components;
@@ -33,6 +35,7 @@ using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
+using Kingmaker.View;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -40,6 +43,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking.Types;
+using static Kingmaker.Armies.TacticalCombat.Grid.TacticalMapObstacle;
 using static Kingmaker.EntitySystem.Properties.BaseGetter.ListPropertyGetter;
 
 
@@ -85,6 +90,13 @@ namespace gun.Firearms
                 .Configure();
             ;
 
+            //rename weapon training for crossbows to include firearms
+            FeatureConfigurator.For("9cdfc2a236ee6d349ad6d8a2170477d5")
+                .SetDisplayName(LocalizationTool.GetString("Feats.WeaponTraining.CrossbowsAndFirearms.Name"))
+                .SetDescription(LocalizationTool.GetString("Feats.WeaponTraining.CrossbowsAndFirearms.Description"))
+                .Configure();
+
+
             //define reload action and rapid reload feat
             RapidReload.Configure();
             SetupReload();
@@ -100,9 +112,16 @@ namespace gun.Firearms
 
         public static void MakeProjectile()
         {
-            ProjectileConfigurator.New("Bullet", BulletGUID).CopyFrom(BlueprintTool.GetRef<BlueprintProjectileReference>(ProjectileRef))
-               .SetSpeed(46)
-               .Configure();
+            ProjectileLink Bulletlink = new ProjectileLink();
+            Bulletlink.AssetId = "1f2be13f05afd4a45853dc027dd7c82c";
+            Bulletlink.m_Handle = BundledResourceHandle<ProjectileView>.Request("1f2be13f05afd4a45853dc027dd7c82c");
+            ProjectileView view = Bulletlink.Load();
+            Main.Log.Log(view.name);
+            ProjectileConfigurator Bullet = ProjectileConfigurator.New("Bullet", BulletGUID).CopyFrom(BlueprintTool.GetRef<BlueprintProjectileReference>(ProjectileRef))
+               .SetSpeed(46);
+            Bullet.SetView(Bulletlink);//This is not yet working may try again in the future but for now we'll stick with the crossbow bolt
+
+            Bullet.Configure();
         }
 
         //creates the capacity "enhancement" on a weapon alongside the associated resource and ability
@@ -584,14 +603,11 @@ namespace gun.Firearms
             FineanConfig.EditComponents<ItemPolymorph>((ItemPolymorph p) => {
                 BlueprintItemReference weapon = BlueprintTool.GetRef<BlueprintItemReference>(ID);
                 p.m_PolymorphItems.Add(weapon);
-                Main.Log.Log("Added" + weapon.Guid + "to Polymorph List");
             }, (ItemPolymorph p) => {
                 return p.m_FlagToCheck == ((ItemPolymorph)Finnean.Components[level]).m_FlagToCheck; 
             });
             FineanConfig.Configure();
-            //((ItemPolymorph)Finnean.Components[level]).m_PolymorphItems.AddItem(BlueprintTool.GetRef<BlueprintItemReference>(ID));
             
-            Main.Log.Log("Last Item in list:" + ((ItemPolymorph)Finnean.Components[level]).m_PolymorphItems.Last().Guid);
             
         }
         //most firearms do unaligned physical blugeoining and piercing damage

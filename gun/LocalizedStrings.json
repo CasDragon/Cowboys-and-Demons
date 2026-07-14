@@ -676,6 +676,14 @@
     "enGB": "Improved Improved Improved Critical Improved (Revolver)"
   },
   {
+    "Key": "Feats.WeaponTraining.CrossbowsAndFirearms.Name",
+    "enGB": "Weapon Training (Crossbows and Firearms)"
+  },
+  {
+    "Key": "Feats.WeaponTraining.CrossbowsAndFirearms.Description",
+    "enGB": "Whenever a fighter {g|Encyclopedia:Attack}attacks{/g} with a weapon from this group, he gains a +1 {g|Encyclopedia:Bonus}bonus{/g} on attack and {g|Encyclopedia:Damage}damage rolls{/g}. This group includes all crossbows and firearms."
+  },
+  {
     "Key": "Finnean",
     "enGB": "Finnean the Talking Weapon"
   },

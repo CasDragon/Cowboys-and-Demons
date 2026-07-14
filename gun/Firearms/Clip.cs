@@ -10,12 +10,15 @@ using global::Kingmaker.PubSubSystem;
 using global::Kingmaker.RuleSystem.Rules;
 using global::Kingmaker.UnitLogic;
 using global::Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.Armies.TacticalCombat;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Blueprints.Root.Strings.GameLog;
+using Kingmaker.Designers.EventConditionActionSystem.Actions;
 using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.EntitySystem;
 using Kingmaker.EntitySystem.Entities;
@@ -23,14 +26,26 @@ using Kingmaker.Enums;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.TextTools;
+using Kingmaker.UI.Log;
+using Kingmaker.UI.Models.Log;
+using Kingmaker.UI.Models.Log.CombatLog_ThreadSystem;
+using Kingmaker.UI.Models.Log.Events;
+using Kingmaker.UI.Tooltip;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.Visual.Sound;
+using Owlcat.Runtime.Core.Logging;
+using Owlcat.Runtime.UI.Tooltips;
+using System.Drawing;
+using System.Media;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Serialization;
+using static Kingmaker.UI.MVVM._VM.ServiceWindows.Spellbook.MagicHack.SpellbookMagicHackMixerView;
 
 namespace gun.Firearms
 {
@@ -45,21 +60,25 @@ namespace gun.Firearms
             {
                 if (evt.Initiator.Buffs.GetBuff(BlueprintTool.Get<BlueprintBuff>(BaseFirearm.RoundsGUID)) == null)//if the firer has no stacks of the rounds buff (used to track ammo)
                 {
-                    evt.AttackRoll.Result = AttackResult.Miss; 
+                    evt.AutoHit = true;
+                    evt.SkipAnimation = true;
+                    evt.ReplaceTarget = true;
+                    evt.NewTarget = null;
+                    Kingmaker.UI.Models.Log.Events.GameLogEventMessage eventmessage = new GameLogEventMessage(evt.Initiator.CharacterName + ": No Ammo");
+                    Kingmaker.Game.Instance.GameLogController.AddReadyEvent(eventmessage);
+                    
                 }
                 else
                 {//if there are rounds 
                     evt.Initiator.Buffs.GetBuff(BlueprintTool.Get<BlueprintBuff>(BaseFirearm.RoundsGUID)).Remove();//then remove one round
-                    Main.Log.Log("Removed Ammo");
-                    //evt.SkipAnimation = true;
-                    return;
+                    SoundPlayer Bang = new SoundPlayer(System.IO.Path.Combine(Main.ModPath, "Media\\Sounds\\bang_01.wav"));
+                    Bang.Play();
                 }
             }
         }
 
         public void OnEventDidTrigger(RuleAttackWithWeapon evt)
         {
-            evt.SkipAnimation = false;
         }
 
     }
@@ -75,39 +94,30 @@ namespace gun.Firearms
                 {
                     if (Rounds == null)//if the firer has no stacks of the rounds buff (used to track ammo)
                     {
-                        evt.AttackRoll.Result = AttackResult.Miss;  //the weapon will automatically miss if there is no ammo
-                                                 
+                        evt.AutoHit = true;
+                        evt.SkipAnimation = true;
+                        evt.ReplaceTarget = true;
+                        evt.NewTarget = null;
+                        
+                        Kingmaker.UI.Models.Log.Events.GameLogEventMessage eventmessage = new GameLogEventMessage(evt.Initiator.CharacterName + ": No Ammo");
+                        Kingmaker.Game.Instance.GameLogController.AddReadyEvent(eventmessage);
+                        return;
+                       //Rulebook.Trigger(log)
                     }
                     else
                     {//if there are rounds 
                         Rounds.Remove();//then remove one round
-                    };
+                    }
+                    
                 }
-                
+                SoundPlayer Bang = new SoundPlayer(System.IO.Path.Combine(Main.ModPath, "Media\\Sounds\\bang_01.wav"));
+                Bang.Play();
+
             }
-            if (evt.Weapon.WeaponVisualParameters.Prototype == null)
-            {
-                Main.Log.Log("prototype null");
-            }
-            else
-            {
-                Main.Log.Log("prototype not null");
-            }
-            if (evt.Weapon.WeaponVisualParameters.m_Projectiles.Length != 0)
-            {
-                Main.Log.Log("has projectile");
-            }
-            else 
-            {
-                Main.Log.Log("has no projectiles");
-            }
-            //evt.SkipAnimation = true;
-            //FirearmFix.Attack(new RulebookEventContext(), evt);
         }
 
         public void OnEventDidTrigger(RuleAttackWithWeapon evt)
         {
-            evt.SkipAnimation = false;
         }
     }
 

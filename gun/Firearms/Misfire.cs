@@ -55,28 +55,49 @@ namespace gun.Firearms
                 {
                     //evt.AutoMiss = true;
                     evt.Result = AttackResult.Miss;//the attack is treated as a miss
-                    if (evt.Initiator.Buffs.GetBuff(BlueprintTool.Get<BlueprintBuff>(DamagedFirearm.DamagedFirearmGUID)) != null && evt.Initiator.Buffs.GetBuff(BlueprintTool.Get<BlueprintBuff>(BaseFirearm.RoundsGUID)) != null)//if the user has a damaged firearm and a round in the clip
+                    bool hasRapidReload = evt.Initiator.GetFeature(BlueprintTool.Get<BlueprintFeature>(RapidReload.RapidReloadGUID)) != null;
+                    bool hasAmmo = evt.Initiator.Buffs.GetBuff(BlueprintTool.Get<BlueprintBuff>(BaseFirearm.RoundsGUID)) != null;
+                    bool hasAdvancedWeapon = false;//assume no advanced weapon
+                    if (hasRapidReload)//if we have rapid reload check hasadvanced weapon
                     {
-                        if (explodes)//advanced firearms don't explode so will not trigger this
-                        {
-                            //blow up
-                            foreach (UnitEntityData item in GameHelper.GetTargetsAround(evt.Initiator.Position, Radius))//find all targets in the misfire explosion radius around the target
+                        foreach (ItemEnchantment enchant in evt.Weapon.Enchantments)
+                        {//then look at all the weapon enchantments
+
+                            if (enchant.Blueprint.AssetGuid == BlueprintGuid.Parse(BaseFirearm.AdvancedClipGUID))//if the enchantment is advanced clip
                             {
-                                RuleSavingThrow misfireSave = new RuleSavingThrow(item, SavingThrowType.Reflex, 12);//make a dc 12 reflex save
-                                Rulebook.Trigger(misfireSave);//roll the save
-                                if (!(misfireSave.Success && misfireSave.ImprovedEvasion))//if the target succeeds and has improved evasion do nothing otherwise
-                                {
-                                    //deal misfire damage
-                                    DealMisfireDamage(evt.Initiator, item, evt.Weapon, (misfireSave.Success || misfireSave.Evasion));
-                                }
+                                hasAdvancedWeapon = true;//then update hasadvanced weapon
+                                break;//and stop looking
                             }
                         }
                     }
-                    else//otherwise
+                    
+                        
+                    if (hasAmmo || (hasRapidReload && hasAdvancedWeapon))//if there are rounds or the bearer has rapid reload and this is an advanced firearm
                     {
-                        //damage the firearm
-                        evt.Initiator.AddBuff(BlueprintTool.Get<BlueprintBuff>(DamagedFirearm.DamagedFirearmGUID), Context, System.TimeSpan.FromHours(1));
+                        if (evt.Initiator.Buffs.GetBuff(BlueprintTool.Get<BlueprintBuff>(DamagedFirearm.DamagedFirearmGUID)) != null)//if the user has a damaged firearm and a round in the clip
+                        {
+                            if (explodes)//advanced firearms don't explode so will not trigger this
+                            {
+                                //blow up
+                                foreach (UnitEntityData item in GameHelper.GetTargetsAround(evt.Initiator.Position, Radius))//find all targets in the misfire explosion radius around the target
+                                {
+                                    RuleSavingThrow misfireSave = new RuleSavingThrow(item, SavingThrowType.Reflex, 12);//make a dc 12 reflex save
+                                    Rulebook.Trigger(misfireSave);//roll the save
+                                    if (!(misfireSave.Success && misfireSave.ImprovedEvasion))//if the target succeeds and has improved evasion do nothing otherwise
+                                    {
+                                        //deal misfire damage
+                                        DealMisfireDamage(evt.Initiator, item, evt.Weapon, (misfireSave.Success || misfireSave.Evasion));
+                                    }
+                                }
+                            }
+                        }
+                        else//otherwise
+                        {
+                            //damage the firearm
+                            evt.Initiator.AddBuff(BlueprintTool.Get<BlueprintBuff>(DamagedFirearm.DamagedFirearmGUID), Context, System.TimeSpan.FromHours(1));
+                        }
                     }
+                    
                 }
             }
         }
