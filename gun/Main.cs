@@ -56,35 +56,24 @@ public static class Main {
                     return;
                 }
                 Initialized = true;
-
-                Log.Log("Patching blueprints.");
-                OwlcatModificationsManager OwlcatModManager = OwlcatModificationsManager.Instance;
-
-                //Log.Log(System.IO.Path.Combine(ModPath, "Bundles\\"));
-                var mymod = OwlcatModificationsManager.LoadModifications(Path.Combine(ModPath, "Bundles\\")).FirstOrDefault();
-                OwlcatModManager.m_Modifications = [.. OwlcatModManager.m_Modifications, mymod];
                 
-                string modificationName = "GunAssets";
-                OwlcatModification owlcatModification = OwlcatModManager.m_Modifications.FirstItem((OwlcatModification d) => d.Manifest?.UniqueName == modificationName);
+                OwlcatModification owlcatModification = OwlcatModificationsManager
+                    .LoadModifications(Path.Combine(ModPath, "Bundles\\"))
+                    .FirstOrDefault();
                 if (owlcatModification == null)
                 {
-                    PFLog.Mods.Error("Missing modification: " + modificationName);
+                    Log.Log("Loading gunmod bundle failed, modification is null.");
                 }
-                //Log.Log("Found mod");
                 else
                 {
-                    string path = owlcatModification.Path;
-                    //Log.Log("At path:" + path);
                     OwlcatModificationManifest manifest = owlcatModification.Manifest;
-                    //Log.Log("got manifest");
                     if (manifest == null)
                     {
-                        PFLog.Mods.Error("Modification can't be loaded: " + modificationName + " (" + path + ")");
+                        Log.Log("Loading gunmod bundle failed, manifest is null.");
                     }
                     else
                     {
-                        //Log.Log("getting ready to apply");
-                        PFLog.Mods.Log("Apply modification: " + manifest.UniqueName + " (" + path + ")");
+                        Log.Log("Applying gunmod modification.");
 
                         owlcatModification.Apply();
                         //Log.Log("applied");
@@ -93,9 +82,8 @@ public static class Main {
                     }
                 }
 
-                // This isn't an Owlmod, it shouldn't show up in the Active Owlmod section
-                //OwlcatModManager.AppliedModifications = list.ToArray();
-
+                Log.Log("Patching blueprints.");
+                
                 BaseFirearm.Configure();
                 Gunslinger.Configure();
                 Musket.Configure();
