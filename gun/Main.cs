@@ -31,8 +31,7 @@ public static class Main {
     }
     public static bool Load(UnityModManager.ModEntry modEntry) {
         Log = modEntry.Logger;
-        LogWrapper.EnableInternalVerboseLogs();
-        modEntry.OnGUI = OnGUI;
+        //LogWrapper.EnableInternalVerboseLogs();
         ModPath = modEntry.Path;
         HarmonyInstance = new Harmony(modEntry.Info.Id);
         try {
@@ -44,17 +43,12 @@ public static class Main {
         return true;
     }
 
-    public static void OnGUI(UnityModManager.ModEntry modEntry) {
-
-    }
-
     [HarmonyPatch(typeof(BlueprintsCache))]
     public static class BlueprintsCaches_Patch {
         private static bool Initialized = false;
-
-
-        [HarmonyPriority(Priority.First)]
+        
         [HarmonyPatch(nameof(BlueprintsCache.Init)), HarmonyPostfix]
+        [HarmonyAfter("DragonLibrary")]
         public static void Init_Postfix() {
             try {
                 if (Initialized) {
@@ -66,23 +60,13 @@ public static class Main {
                 Log.Log("Patching blueprints.");
                 // Insert your mod's patching methods here
                 OwlcatModificationsManager OwlcatModManager = OwlcatModificationsManager.Instance;
-                if (!OwlcatModManager.m_Started) 
-                {
-                    OwlcatModManager.Start();
-                }
 
-                List<OwlcatModification> list = new List<OwlcatModification>();
-//                list.AddRange(OwlcatModManager.m_Modifications);
-                Log.Log(System.IO.Path.Combine(ModPath, "Bundles\\"));
-                list.AddRange(OwlcatModificationsManager.LoadModifications(System.IO.Path.Combine(ModPath, "Bundles\\")));
+                List<OwlcatModification> list = [.. OwlcatModManager.m_Modifications];
+                //Log.Log(System.IO.Path.Combine(ModPath, "Bundles\\"));
+                list.AddRange(OwlcatModificationsManager.LoadModifications(Path.Combine(ModPath, "Bundles\\")));
+                OwlcatModManager.m_Modifications = list.ToArray();
                 
-                List<OwlcatModification> m_Modifications = new List<OwlcatModification>();
-
-
-                m_Modifications.AddRange(OwlcatModManager.m_Modifications);
-                m_Modifications.AddRange(list);
-                OwlcatModManager.m_Modifications = m_Modifications.ToArray();
-                string[] enabledModifications = { "GunAssets" };
+                string[] enabledModifications = [ "GunAssets" ];
                 foreach (string modificationName in enabledModifications)
                 {
 
@@ -110,7 +94,9 @@ public static class Main {
                         Log.Log("applied");
                         owlcatModification.Reload();
                         Log.Log("reloading");
-                        //list.Add(owlcatModification);
+                        
+                        if (!list.Contains(owlcatModification))
+                            list.Add(owlcatModification);
                     }
                 }
                 OwlcatModManager.AppliedModifications = list.ToArray();
