@@ -56,10 +56,10 @@ public static class Main {
                     return;
                 }
                 Initialized = true;
-                
-                OwlcatModification owlcatModification = OwlcatModificationsManager
-                    .LoadModifications(Path.Combine(ModPath, "Bundles\\"))
-                    .FirstOrDefault();
+
+                var path = Path.Combine(ModPath, "Bundles\\");
+                OwlcatModification owlcatModification = OwlcatModification
+                    .LoadFromDirectory(path, path);
                 if (owlcatModification == null)
                 {
                     Log.Log("Loading gunmod bundle failed, modification is null.");
